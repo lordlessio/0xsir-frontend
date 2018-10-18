@@ -3,6 +3,8 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
+const PostCompilePlugin = require('webpack-post-compile-plugin')
+const TransformModulesPlugin = require('webpack-transform-modules-plugin')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -35,6 +37,9 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       '@': resolve('src'),
+      'stylus': resolve('src/assets/stylus'),
+      'api': resolve('src/api'),
+      'utils': resolve('src/assets/utils'),
     }
   },
   module: {
@@ -76,6 +81,10 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new PostCompilePlugin(),
+    new TransformModulesPlugin()
+  ],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
     // source contains it (although only uses it if it's native).
