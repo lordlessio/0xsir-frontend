@@ -1,0 +1,172 @@
+.d-flex {
+  display: flex;
+}
+.d-iflex {
+  display: inline-flex;
+}
+.align-start {
+  align-items: flex-start;
+}
+.align-stretch {
+  align-items: stretch;
+}
+.align-baseline {
+  align-items: baseline;
+}
+.align-end {
+  align-items: flex-end;
+}
+.align-start {
+  align-items: flex-start;
+}
+.align-center {
+  align-items: center;
+}
+.justify-start {
+  justify-content: flex-start;
+}
+.justify-end {
+  justify-content: flex-end;
+}
+.justify-center {
+  justify-content: center;
+}
+.justify-around {
+  justify-content: space-around;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.auto-center {
+  align-items: center;
+  justify-content: center;
+}
+.f-wrap {
+  flex-wrap: wrap;
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex-re-col {
+  flex-direction: column-reverse;
+}
+.flex-row {
+  flex-direction: row;
+}
+.flex-re-row {
+  flex-direction: row-reverse;
+}
+.v-flex {
+  flex: 1;
+}
+.order-1 {
+  order: 1;
+}
+.order-2 {
+  order: 2;
+}
+.order-3 {
+  order: 3;
+}
+.full-width {
+  width: 100%;
+}
+.i-block {
+  display: inline-block;
+}
+.block {
+  display: block;
+}
+.hidden {
+  display: none !important;
+}
+.index-1 {
+  z-index: 1;
+}
+.index-2 {
+  z-index: 2;
+}
+.index-3 {
+  z-index: 3;
+}
+.index-9 {
+  z-index: 9;
+}
+
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+.text-nowrap {
+  white-space: nowrap;
+}
+.text-break {
+  word-break: break-all;
+}
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.text-cap {
+  text-transform: capitalize;
+}
+.text-lower {
+  text-transform: lowercase;
+}
+.text-upper {
+  text-transform: uppercase;
+}
+.text-line-through {
+  text-decoration: line-through;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.cursor-no-drop {
+  cursor: no-drop;
+}
+.hover-underline {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.line-height-1 {
+  line-height: 1
+}
+.line-height-0 {
+  line-height: 0;
+}
+.font-bold {
+  font-weight: bold;
+}
+.font-bolder {
+  font-weight: bolder;
+}
+.relative {
+  position: relative;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+.overflow {
+  @include overflow();
+}
+
+.TTFontMedium {
+  font-family: $--font-TTNormsMedium;
+}
+.TTFontBold {
+  font-family: $--font-TTNormsBold;
+  font-weight: bold;
+}
+.TTFontBlack {
+  font-family: $--font-TTNormsBlack;
+  font-weight: bolder;
+}

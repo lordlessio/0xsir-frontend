@@ -1,94 +1,42 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <h2>Essential Links</h2>
-    <ul>
-      <li>
-        <a
-          href="https://vuejs.org"
-          target="_blank"
-        >
-          Core Docs
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://forum.vuejs.org"
-          target="_blank"
-        >
-          Forum
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://chat.vuejs.org"
-          target="_blank"
-        >
-          Community Chat
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://twitter.com/vuejs"
-          target="_blank"
-        >
-          Twitter
-        </a>
-      </li>
-      <br>
-      <li>
-        <a
-          href="http://vuejs-templates.github.io/webpack/"
-          target="_blank"
-        >
-          Docs for This Template
-        </a>
-      </li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li>
-        <a
-          href="http://router.vuejs.org/"
-          target="_blank"
-        >
-          vue-router
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vuex.vuejs.org/"
-          target="_blank"
-        >
-          vuex
-        </a>
-      </li>
-      <li>
-        <a
-          href="http://vue-loader.vuejs.org/"
-          target="_blank"
-        >
-          vue-loader
-        </a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/vuejs/awesome-vue"
-          target="_blank"
-        >
-          awesome-vue
-        </a>
-      </li>
-    </ul>
+    <h2 @click="$emit('click')">Essential Links</h2>
+    <!-- <img :src="'https%3A%2F%2Fstorage.googleapis.com%2Fopensea-static%2Fetheremon-logo.png' | proxyImg"/> -->
+    <div v-for="(item, index) of Object.values(erc721s || {})" :key="index">
+      <ul v-if="item">
+        <li v-for="(cItem, cIndex) of item.list" :key="`${index}_${cIndex}`">
+          <img :src="cItem.poster | proxyImg"/>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import { getErc721s } from 'api'
 export default {
   name: 'HelloWorld',
+  props: {
+    msg: {
+      type: String,
+      default: 'Welcome to Your Vue.js App'
+    }
+  },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      erc721s: {}
+    }
+  },
+  methods: {},
+  async mounted () {
+    const params = {
+      address: '0x088e25e6027816c753d01d7f243c367710f20497',
+      pn: 0
+    }
+    const res = await getErc721s(params)
+    if (res.code === 1000) {
+      this.erc721s = res.data.erc721
     }
   }
 }

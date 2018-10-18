@@ -1,0 +1,73 @@
+.container {
+  margin: 0 auto;
+  padding: 0 30px;
+  max-width: 768px;
+  box-sizing: border-box;
+}
+
+.sir-section-toolbar {
+  font-size: 16px;
+  svg {
+    margin-right: 5px;
+    width: 15px;
+    height: 15px;
+    fill: #fff;
+  }
+}
+
+.sir-title-block {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -10px;
+    width: 30px;
+    height: 5px;
+    background-image: linear-gradient(-180deg, #FAD961 0%, #F76B1C 100%);
+    border-radius: 5px;
+  }
+  &.bottom {
+    &::before {
+      top: inherit;
+      bottom: -10px;
+    }
+  }
+  &.lg {
+    &::before {
+      width: 50px;
+      height: 6px;
+    }
+  }
+}
+
+.sir-hide-fade-enter-active, .sir-hide-fade-leave-active {
+  opacity: 1;
+  transition: opacity .4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sir-hide-fade-enter, .sir-hide-fade-leave-to {
+  opacity: 0;
+}
+
+.sir-hide-in-fade-enter-active {
+  opacity: 1;
+  transition: opacity .4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sir-hide-in-fade-leave-active {
+  opacity: 0;
+  transition-duration: 0s;
+}
+.sir-hide-in-fade-enter, .sir-hide-in-fade-leave-to {
+  opacity: 0;
+}
+
+.sir-skeletion-fade-enter-active, .sir-skeletion-fade-leave-active {
+  opacity: 1;
+  transition: opacity .4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sir-skeletion-fade-enter, .sir-skeletion-fade-leave-to {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+}
+
