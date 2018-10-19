@@ -79,7 +79,7 @@ export default {
     font-size: 24px;
     color: #fff;
     transition: all .3s ease;
-    z-index: 199;
+    z-index: 99;
     &.fixed {
       padding-top: 15px;
       padding-bottom: 15px;

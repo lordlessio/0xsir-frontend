@@ -42,6 +42,11 @@
         <p class="overview-markline overview-contract-markline"></p>
       </div>
     </div>
+    <div class="overview-address-cloud">
+      <img src="static/wordcloud.svg"/>
+      <p>Address profile cloud</p>
+    </div>
+    <p class="overview-markline"></p>
     <ul class="d-flex align-center overview-tx-ul overview-tx-timeline">
       <li class="v-flex">
         <p class="overview-text">Sep. 13 2016</p>
@@ -183,7 +188,14 @@ export default {
     font-size: 20px;
     color: #fff;
   }
+  .overview-address-cloud {
+    margin-bottom: 42px;
+    >p {
+      margin-top: 6px;
+    }
+  }
   .overview-tx-timeline {
+    margin-top: 42px;
     .overview-text {
       margin-bottom: 4px;
     }

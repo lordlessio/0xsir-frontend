@@ -35,7 +35,8 @@ export default {
   name: 'index',
   data: () => {
     return {
-      address: '0x533A99a1292C7ddB74621BF288F50fa34D42C79E',
+      // address: '0x533A99a1292C7ddB74621BF288F50fa34D42C79E',
+      address: '0x088e25e6027816c753d01d7f243c367710f20497',
 
       overviewLoading: true,
       overviewDatas: {},
@@ -99,6 +100,7 @@ export default {
         this.overviewLoading = false
       } catch (err) {
         this.overviewLoading = false
+        this.overviewDatas = {}
       }
     },
 
@@ -113,6 +115,7 @@ export default {
         this.NFTsLoading = false
       } catch (err) {
         this.NFTsLoading = false
+        this.NFTDatas = {}
       }
     },
     async getErc20 ({ address = this.address } = {}) {
@@ -126,9 +129,11 @@ export default {
         this.erc20Loading = false
       } catch (err) {
         this.erc20Loading = false
+        this.erc20Datas = {}
       }
     },
-    async initTxDatas ({ address = this.address, pn = this.txDatas.pn, ps = this.txDatas.ps } = {}) {
+
+    async initTxDatas ({ address = this.address, pn = 0, ps = this.txDatas.ps } = {}) {
       this.txLoading = true
       try {
         const txDatas = await this.getTxDatas({ address, pn, ps })
@@ -138,8 +143,14 @@ export default {
         this.txDatas = txDatas
       } catch (err) {
         this.txLoading = false
+        this.txDatas = {
+          list: [],
+          pn: 0,
+          ps: 10
+        }
       }
     },
+
     async getTxDatas ({ address = this.address, pn = this.txDatas.pn, ps = this.txDatas.ps } = {}) {
       const res = await getTxs({ address, pn, ps }) || {}
       if (res.code === 1000) {
@@ -147,6 +158,7 @@ export default {
       }
       return null
     },
+
     async refreshTxDatas (cb) {
       const txDatas = await this.getTxDatas({ pn: 0 })
       this.txDatas = txDatas
