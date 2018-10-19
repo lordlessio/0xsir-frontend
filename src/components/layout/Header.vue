@@ -50,11 +50,17 @@ export default {
     let navbarInverse = false
     const func = () => {
       const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
-      if (!navbarInverse && scrollTop > 50) {
-        addClass('fixed', document.getElementById('sir-main-header'))
+      if (!navbarInverse && scrollTop > 62) {
+        const header = document.getElementById('sir-main-header')
+        header.style.opacity = 0
+        addClass('fixed', header)
+        header.style.opacity = 1
         navbarInverse = true
-      } else if (navbarInverse && scrollTop <= 50) {
-        removeClass('fixed', document.getElementById('sir-main-header'))
+      } else if (navbarInverse && scrollTop <= 62) {
+        const header = document.getElementById('sir-main-header')
+        header.style.opacity = 0
+        removeClass('fixed', header)
+        header.style.opacity = 1
         navbarInverse = false
       }
     }
@@ -72,7 +78,7 @@ export default {
     width: 100%;
     font-size: 24px;
     color: #fff;
-    transition: all .15s ease-in-out;
+    transition: all .3s ease;
     z-index: 199;
     &.fixed {
       padding-top: 15px;

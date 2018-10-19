@@ -2,31 +2,33 @@
   <section class="TTFontBold relative sir-breakdown">
     <transition name="sir-skeletion-fade">
       <div v-if="loading" class="sir-breakdown-skeletion">
-        <h2></h2>
-        <div class="erc20-skeletion-container">
-          <p></p>
-          <div>
+        <div class="skeletion-animate">
+          <h2></h2>
+          <div class="erc20-skeletion-container">
             <p></p>
-            <p></p>
-          </div>
-          <ul>
-            <li></li>
-            <li></li>
-            <li></li>
-          </ul>
-        </div>
-        <div class="NFTs-skeletion-container">
-          <ul>
-            <li v-for="p of [1]" :key="p" class="NFTs-skeletion-item">
+            <div>
               <p></p>
-              <span class="i-block text-center" v-for="c of [1,2,3,4]" :key="`${p}_${c}`">
-                <svg>
-                  <use xlink:href="#icon-alien"/>
-                </svg>
-                <span class="i-block"></span>
-              </span>
-            </li>
-          </ul>
+              <p></p>
+            </div>
+            <ul>
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
+          </div>
+          <div class="NFTs-skeletion-container">
+            <ul>
+              <li v-for="p of [1]" :key="p" class="NFTs-skeletion-item">
+                <p></p>
+                <span class="i-block text-center" v-for="c of [1,2,3,4]" :key="`${p}_${c}`">
+                  <svg>
+                    <use xlink:href="#icon-alien"/>
+                  </svg>
+                  <span class="i-block"></span>
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </transition>
@@ -73,9 +75,9 @@
                 <span class="d-flex flex-col">
                   <span>
                     <span class="popup-erc20-count">{{ erc20.count | formatDecimal({ len: 2 }) | formatNumber }} {{ erc20.symbol }}</span>
-                    <span class="popup-erc20-price"> × ${{ erc20.price }}</span>
+                    <span class="popup-erc20-price"> × ${{ erc20.price || 0 }}</span>
                   </span>
-                  <span class="TTFontBold popup-erc20-value">≈ ${{ erc20.value }}</span>
+                  <span class="TTFontBold popup-erc20-value">≈ ${{ erc20.value || 0 }}</span>
                 </span>
               </p>
               <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
@@ -231,7 +233,8 @@ export default {
 
       let scrollX = 0
       if (direction === 'left') {
-        scrollX = Math.abs(currentX) >= width ? width : 30
+        console.log('-------', currentX, Math.abs(currentX), width)
+        scrollX = Math.abs(currentX) >= width ? currentX + width : 30
       } else {
         scrollX = currentX - width >= maxX ? currentX - width : maxX - 30
       }
