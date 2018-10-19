@@ -18,7 +18,8 @@
               <use xlink:href="#lordless-logo"/>
             </svg>
           </span>
-          <span class="v-flex">Decentralized task distribution platform with game as carrier</span>
+          <a class="v-flex" href="http://lordless.games" target="_blank">Decentralized task distribution platform with game as carrier</a>
+          <!-- <span class="v-flex">Decentralized task distribution platform with game as carrier</span> -->
         </li>
       </ul>
     </div>
@@ -93,6 +94,9 @@ export default {
   .footer-links-item {
     margin-top: 15px;
     color: #BDB9FD;
+    a {
+      color: inherit;
+    }
   }
   .footer-link-logo {
     margin-right: 10px;

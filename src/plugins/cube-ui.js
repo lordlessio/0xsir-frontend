@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { ActionSheet, Scroll, Popup } from 'cube-ui'
-Vue.use(ActionSheet)
+import { Scroll, Textarea } from 'cube-ui'
+// Vue.use(ActionSheet)
 Vue.use(Scroll)
-Vue.use(Popup)
+// Vue.use(Popup)
+Vue.use(Textarea)

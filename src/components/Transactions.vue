@@ -2,7 +2,7 @@
   <section class="TTFontBold relative sir-transactions">
     <transition name="sir-skeletion-fade">
       <div v-if="loading" class="sir-txs-skeletion">
-        <div class="txs-skeletion-container">
+        <div class="txs-skeletion-container skeletion-animate">
           <h2></h2>
           <ul class="d-flex flex-col txs-skeletion-senders">
             <li v-for="p of [1,2]" :key="p" class="skeletion-senders-item">

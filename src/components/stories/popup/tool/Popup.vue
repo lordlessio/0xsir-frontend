@@ -134,7 +134,7 @@ export default {
   .sir-popup-fade-enter-active, .sir-popup-fade-leave-active {
     // opacity: 1;
     transform: translateY(0);
-    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all .25s ease;
   }
   .sir-popup-fade-enter, .sir-popup-fade-leave-to {
     // opacity: 0;

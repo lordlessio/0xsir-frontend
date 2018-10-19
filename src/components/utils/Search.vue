@@ -4,8 +4,19 @@
       <div v-if="visible" class="sir-utils-box">
         <div class="d-flex flex-col container">
           <div class="v-flex d-flex flex-col">
-            <input class="sir-search-input" v-model="address" type="text" placeholder="search for your address"/>
-            <button class="sir-search-btn" type="button" @click.stop="$emit('search', address)">Search</button>
+            <cube-textarea
+              v-model="address"
+              indicator="indicator"
+              :maxlength="42"
+              placeholder="please input address here..."></cube-textarea>
+            <!-- <input class="sir-search-input"
+              ref="searchInput"
+              v-model="address"
+              type="text"
+              placeholder="search for your address"
+              maxlength="42"/>
+            <p class="TTFontMedium sir-search-address" @click.stop="focus">{{ address }}</p> -->
+            <button class="TTFontBold sir-search-btn" type="button" @click.stop="$emit('search', address)">Search</button>
           </div>
           <div class="text-center sir-search-bottom" :class="{ 'show': show }">
             <span class="i-block" @click.stop="$emit('update:visible', false)">Close</span>
@@ -54,10 +65,12 @@ export default {
 <style lang="scss" scoped>
   .sir-tx-fade-enter-active, .sir-tx-fade-leave-active {
     opacity: 1;
-    transition: all .15s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all .15s ease;
   }
   .sir-tx-fade-enter, .sir-tx-fade-leave-to {
     opacity: 0;
+    // transition-delay: 0s;
+    // transition: opacity .15s cubic-bezier(0.4, 0, 0.2, 1), width 0s .15s, height 0s .15s;
   }
 
   .sir-search {
@@ -67,28 +80,50 @@ export default {
     width: 100%;
     height: 100%;
     // background-color: #151618;
-    transition: all .3s;
     z-index: -1;
+    transition: opacity .3s ease, width 0s .3s, height 0s .3s, z-index 0s .3s;
     &.active {
       // position: fixed;
       z-index: 9;
       @include viewport-unit('width', 100vw);
       @include viewport-unit('height', 100vh);
+      transition: all .3s ease 0s;
+    }
+    /deep/ {
+      .cube-textarea-wrapper {
+        &::after {
+          display: none;
+        }
+      }
+      .cube-textarea_expanded {
+        height: initial;
+        min-height: 40px;
+        // line-height: 40px;
+      }
     }
   }
 
   .sir-search-input {
+    padding: 5px 10px;
     border: 1px solid #555;
     font-size: 16px;
-    line-height: 32px;
-    border-radius: 5px;
-    text-indent: 10px;
+    line-height: 1.4;
+    border-radius: 3px;
+    // text-indent: 10px;
     &::placeholder {
       color: #aaa;
     }
   }
+  .sir-search-address {
+    padding: 5px 10px;
+    border: 1px solid #555;
+    font-size: 16px;
+    color: #2D0EBD;
+    background-color: #BDB9FD;
+  }
   .sir-search-btn {
-    padding: 15px 0;
+    margin-top: 15px;
+    padding: 10px 0;
     width: 100px;
     font-size: 16px;
     color: #fff;

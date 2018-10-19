@@ -35,19 +35,18 @@ export default {
   name: 'index',
   data: () => {
     return {
-      loading: false,
       address: '0x533A99a1292C7ddB74621BF288F50fa34D42C79E',
 
-      overviewLoading: false,
+      overviewLoading: true,
       overviewDatas: {},
 
-      NFTsLoading: false,
+      NFTsLoading: true,
       NFTDatas: {},
 
-      erc20Loading: false,
+      erc20Loading: true,
       erc20Datas: {},
 
-      txLoading: false,
+      txLoading: true,
       txDatas: {
         list: [],
         pn: 0,
@@ -77,6 +76,7 @@ export default {
   methods: {
 
     search (address) {
+      document.documentElement.scrollTop = 0
       this.address = address
       this.init({ address })
     },
@@ -90,40 +90,58 @@ export default {
 
     async getInfoById ({ address = this.address } = {}) {
       this.overviewLoading = true
-      const res = await getInfoById(address)
-      if (res.code === 1000) {
-        this.overviewDatas = res.data || {}
+      let res
+      try {
+        res = await getInfoById(address) || {}
+        if (res.code === 1000) {
+          this.overviewDatas = res.data || {}
+        }
+        this.overviewLoading = false
+      } catch (err) {
+        this.overviewLoading = false
       }
-      this.overviewLoading = false
     },
 
     async getNFTs ({ address = this.address } = {}) {
       this.NFTsLoading = true
-      const res = await getNFTs({ address })
-      if (res.code === 1000) {
-        this.NFTDatas = res.data
+      let res
+      try {
+        res = await getNFTs({ address }) || {}
+        if (res.code === 1000 && res.data) {
+          this.NFTDatas = res.data
+        }
+        this.NFTsLoading = false
+      } catch (err) {
+        this.NFTsLoading = false
       }
-      this.NFTsLoading = false
     },
     async getErc20 ({ address = this.address } = {}) {
       this.erc20Loading = true
-      const res = await getErc20({ address })
-      if (res.code === 1000) {
-        this.erc20Datas = res.data
+      let res
+      try {
+        res = await getErc20({ address }) || {}
+        if (res.code === 1000 && res.data) {
+          this.erc20Datas = res.data
+        }
+        this.erc20Loading = false
+      } catch (err) {
+        this.erc20Loading = false
       }
-      this.erc20Loading = false
     },
     async initTxDatas ({ address = this.address, pn = this.txDatas.pn, ps = this.txDatas.ps } = {}) {
       this.txLoading = true
-      const txDatas = await this.getTxDatas({ address, pn, ps })
+      try {
+        const txDatas = await this.getTxDatas({ address, pn, ps })
+        this.txLoading = false
 
-      this.txLoading = false
-
-      if (!txDatas) return
-      this.txDatas = txDatas
+        if (!txDatas) return
+        this.txDatas = txDatas
+      } catch (err) {
+        this.txLoading = false
+      }
     },
     async getTxDatas ({ address = this.address, pn = this.txDatas.pn, ps = this.txDatas.ps } = {}) {
-      const res = await getTxs({ address, pn, ps })
+      const res = await getTxs({ address, pn, ps }) || {}
       if (res.code === 1000) {
         return res.data
       }
