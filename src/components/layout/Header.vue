@@ -79,11 +79,7 @@ export default {
     font-size: 24px;
     color: #fff;
     transition: all .3s ease;
-    z-index: 199;
     &.fixed {
-      padding-top: 15px;
-      padding-bottom: 15px;
-      position: fixed;
       top: 0;
       background-color: #151618;
     }

@@ -59,7 +59,7 @@
             :visible.sync="popupModel"
             :list="txs"
             :pullUpLoad="true"
-            :title="`Recent transactions (6)`"
+            :title="`Recent transactions`"
             @loadmore="$emit('loadmore', $event)"
             @refresh="$emit('refresh', $event)">
             <li
@@ -264,6 +264,8 @@ export default {
     border-radius: 100%;
     background-color: #fff;
     overflow: hidden;
+    border: 1px solid transparent;
+    box-sizing: border-box;
     >img {
       width: 100%;
     }

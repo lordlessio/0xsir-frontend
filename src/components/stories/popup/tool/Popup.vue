@@ -74,7 +74,7 @@ export default {
       const { scrollbar, pullDownRefresh, pullUpLoad } = this
       console.log('pullUpLoad', pullUpLoad === true ? { txt: { noMore: 'No More Data' } } : pullUpLoad)
       return {
-        scrollbar, pullDownRefresh, pullUpLoad: pullUpLoad === true ? { txt: 'No More Data' } : pullUpLoad
+        scrollbar, pullDownRefresh, pullUpLoad: pullUpLoad === true ? { txt: { noMore: 'No More Data' } } : pullUpLoad
       }
     }
   },
@@ -119,6 +119,7 @@ export default {
       this.rendered = true
       if (this.appendToBody) {
         document.body.appendChild(this.$el)
+        this.$refs.scroll.refresh()
       }
     }
   },
