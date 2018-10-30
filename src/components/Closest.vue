@@ -68,12 +68,12 @@ export default {
       type: Boolean,
       default: true
     }
-  },
-  watch: {
-    closests (val) {
-
-    }
   }
+  // watch: {
+  //   closests (val) {
+
+  //   }
+  // }
 }
 </script>
 

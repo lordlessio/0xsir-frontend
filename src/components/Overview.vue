@@ -24,7 +24,7 @@
       </div>
       <div v-else key="overview-content">
         <div class="overview-header">
-          <div v-if="!overviewDatas.info._id" class="relative index-1">
+          <div v-if="!overviewDatas.info || !overviewDatas.info._id" class="relative index-1">
             <sir-blockies class="overview-blockies" :seed="address"/>
             <h1 @click.stop="isFullAddress = !isFullAddress">
               <span v-if="!isFullAddress" class="sir-title-block bottom lg">{{ address | sliceStr({ end: 11 }) }}...</span>
@@ -78,10 +78,10 @@
           </li>
         </ul>
         <ul class="d-flex align-center overview-tx-ul overview-tx-count">
-          <li class="v-flex">
+          <!-- <li class="v-flex">
             <p class="overview-text">Ξ {{ overviewDatas.txTimeline.max.data.tx.value | weiToEth | formatNumber }}</p>
             <p>Max transaction</p>
-          </li>
+          </li> -->
           <li class="v-flex">
             <p class="overview-text">{{ overviewDatas.txTimeline.total }}</p>
             <p>Transactions</p>

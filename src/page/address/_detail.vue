@@ -1,5 +1,6 @@
 <template>
   <main id="sir-main" class="sir-main">
+    <sir-loading :visible="!loadingDone"/>
     <p v-show="download" class="sir-downlowe-powered">Powered by LORDLESS</p>
     <sir-header
       @search="search"
@@ -96,7 +97,7 @@ export default {
     },
     loadingDone () {
       // const done = this.eLoading && this.nLoading && this.tLoading
-      return !(this.eLoading || this.nLoading || this.tLoading)
+      return !(this.eLoading || this.nLoading || this.tLoading || this.closestLoading)
     },
     download () {
       return this.loadingDone && this.preDownload
@@ -174,6 +175,7 @@ export default {
           this.overviewDatas = res.data || this.overviewDatas
         }
         this.overviewLoading = false
+        console.log('overviewLoading', this.overviewLoading, res.data)
       } catch (err) {
         this.overviewLoading = false
       }

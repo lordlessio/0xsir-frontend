@@ -58,9 +58,9 @@
                   <span v-else>{{ tx.from | sliceStr }}...</span>
                 </p>
                 <p class="symbol">#{{ tx.tokenSymbol }}</p>
-                <p class="text-nowrap date">{{ new Date(parseInt(tx.timeStamp) * 1000) | dateFormat }}</p>
+                <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat }}</p>
               </div>
-              <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth | formatNumber }}</p>
+              <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth(tx.decimals) | formatNumber }}</p>
             </li>
           </ul>
         </div>
@@ -107,7 +107,6 @@
     <sir-popup
       :visible.sync="popupModel"
       :list="txs"
-      :pullUpLoad="true"
       :title="`Recent transactions`"
       @loadmore="$emit('loadmore', $event)"
       @refresh="$emit('refresh', $event)">
@@ -124,9 +123,9 @@
             <span v-else>{{ tx.from | sliceStr }}...</span>
           </p>
           <p class="symbol">#{{ tx.tokenSymbol }}</p>
-          <p class="text-nowrap date">{{ new Date(parseInt(tx.timeStamp) * 1000) | dateFormat }}</p>
+          <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat }}</p>
         </div>
-        <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth | formatNumber }}</p>
+        <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth(tx.decimals) | formatNumber }}</p>
       </li>
     </sir-popup>
   </section>
