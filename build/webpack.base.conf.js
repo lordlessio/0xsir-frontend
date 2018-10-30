@@ -40,6 +40,7 @@ module.exports = {
       'stylus': resolve('src/assets/stylus'),
       'api': resolve('src/api'),
       'utils': resolve('src/assets/utils'),
+      '_static': resolve('static')
     }
   },
   module: {

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @touchmove.stop>
     <sir-svg/>
     <router-view/>
   </div>
@@ -17,6 +17,9 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: $--font-TTNormsMedium;
+  // height: 100%;
+  // overflow: auto;
+  // -webkit-overflow-scrolling: touch;
   /* text-align: center;
   color: #2c3e50;
   margin-top: 60px; */

@@ -1,14 +1,18 @@
 <template>
   <div ref="sir-search" class="sir-search" :class="{ 'active': visible }">
-    <transition name="sir-tx-fade" @after-enter="show = true">
+    <transition name="sir-tx-fade" @after-enter="show = true" @enter="showSearch = true">
       <div v-if="visible" class="sir-utils-box">
-        <div class="d-flex flex-col container">
-          <div class="v-flex d-flex flex-col">
-            <cube-textarea
+        <div class="d-flex flex-col full-height">
+          <div class="v-flex d-flex flex-col overflow container sir-search-cnt">
+            <sir-search
+              :visible="showSearch"
+              inside
+              @search="$emit('search', $event)"/>
+            <!-- <cube-textarea
               v-model="address"
               indicator="indicator"
               :maxlength="42"
-              placeholder="please input address here..."></cube-textarea>
+              placeholder="please input address here..."></cube-textarea> -->
             <!-- <input class="sir-search-input"
               ref="searchInput"
               v-model="address"
@@ -16,7 +20,7 @@
               placeholder="search for your address"
               maxlength="42"/>
             <p class="TTFontMedium sir-search-address" @click.stop="focus">{{ address }}</p> -->
-            <button class="TTFontBold sir-search-btn" type="button" @click.stop="$emit('search', address)">Search</button>
+            <!-- <button class="TTFontBold sir-search-btn" type="button" @click.stop="$emit('search', address)">Search</button> -->
           </div>
           <div class="text-center sir-search-bottom" :class="{ 'show': show }">
             <span class="i-block" @click.stop="$emit('update:visible', false)">Close</span>
@@ -29,8 +33,9 @@
 
 <script>
 import { addClass, removeClass } from 'utils'
+import SirSearch from '@/components/Search'
 export default {
-  name: 'sir-search',
+  name: 'sir-utils-search',
   props: {
     visible: {
       type: Boolean,
@@ -40,7 +45,8 @@ export default {
   data: () => {
     return {
       address: '',
-      show: false
+      show: false,
+      showSearch: false
     }
   },
   watch: {
@@ -56,8 +62,12 @@ export default {
 
         removeClass('overflow-hidden', document.body)
         this.show = false
+        this.showSearch = false
       }
     }
+  },
+  components: {
+    SirSearch
   }
 }
 </script>
@@ -65,7 +75,7 @@ export default {
 <style lang="scss" scoped>
   .sir-tx-fade-enter-active, .sir-tx-fade-leave-active {
     opacity: 1;
-    transition: all .15s ease;
+    transition: all .3s ease-in-out;
   }
   .sir-tx-fade-enter, .sir-tx-fade-leave-to {
     opacity: 0;
@@ -144,9 +154,13 @@ export default {
       font-size: 20px;
     }
   }
-  .container {
-    height: 100%;
+  // .container {
+  //   height: 100%;
+  // }
+  .sir-search-cnt {
+    padding-bottom: 50px;
   }
+
   .sir-search-bottom {
     padding-top: 6px;
     padding-bottom: 20px;

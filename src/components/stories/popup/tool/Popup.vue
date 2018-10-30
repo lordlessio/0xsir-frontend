@@ -11,16 +11,18 @@
       <div v-if="rendered" class="d-flex flex-col container sir-slide-container">
         <p v-if="title" class="sir-popup-title">{{ title }}</p>
         <cube-scroll
+          v-if="scroll"
           ref="scroll"
           :data="list"
-          class="v-flex horizontal-scroll-list-wrap"
+          class="v-flex popup-scroll-list-wrap"
           :options="scrollOpts"
           @pulling-down="pullDown"
           @pulling-up="pullUp">
-          <ul class="NFTs-assets-ul" :class="{ 'show': show }">
+          <ul class="sir-popup-ul" :class="{ 'show': show }">
             <slot/>
           </ul>
         </cube-scroll>
+        <slot v-if="!scroll"/>
         <div class="text-center sir-popup-bottom">
           <span class="i-block" @click.stop="$emit('close')">Close</span>
         </div>
@@ -43,6 +45,10 @@ export default {
       default: 450
     },
     appendToBody: {
+      type: Boolean,
+      default: true
+    },
+    scroll: {
       type: Boolean,
       default: true
     },
@@ -95,11 +101,15 @@ export default {
   methods: {
     pullDown () {
       this.$emit('refresh', () => {
+        console.log('rendered', this.rendered)
+        if (!this.rendered) return
         this.$refs.scroll.forceUpdate()
       })
     },
     pullUp () {
       this.$emit('loadmore', () => {
+        console.log('rendered', this.rendered)
+        if (!this.rendered) return
         this.$refs.scroll.forceUpdate()
       })
     },
@@ -108,7 +118,10 @@ export default {
       this.$emit('opened')
     },
     destroy () {
+      console.log('-----------destroyed')
       if (this.appendToBody && this.$el && this.$el.parentNode) {
+        this.rendered = false
+        if (this.$refs.scroll) this.$refs.scroll.forceUpdate()
         this.$el.parentNode.removeChild(this.$el)
       }
     }
@@ -119,7 +132,7 @@ export default {
       this.rendered = true
       if (this.appendToBody) {
         document.body.appendChild(this.$el)
-        this.$refs.scroll.refresh()
+        if (this.$refs.scroll) this.$refs.scroll.refresh()
       }
     }
   },
@@ -164,13 +177,17 @@ export default {
     margin-bottom: 20px;
     font-size: 16px;
   }
+  .popup-scroll-list-wrap {
+    margin: 0 -35px;
+    padding: 0 35px;
+  }
 
   /deep/ {
-    .NFTs-assets-ul {
+    .sir-popup-ul {
       >li {
         opacity: 0;
         transform: translateY(5px);
-        transition: opacity .2s ease-in-out, transform .15s ease-in-out;
+        transition: opacity .35s ease-in-out, transform .35s ease-in-out;
       }
       &.show {
         >li {

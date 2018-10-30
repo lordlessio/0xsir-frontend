@@ -30,7 +30,7 @@ export const formatDecimal = (str, { len = 4, percentage = false } = {}) => {
 /**
  * dateFormat
  */
-export const dateFormat = (date, format = 'MMMM Do YYYY, HH:mm:ss') => {
+export const dateFormat = (date, format = 'MMM. DD YYYY') => {
   return dateFnsFormat(date, format)
 }
 
@@ -63,7 +63,7 @@ export const weiToEth = (value) => {
 
   value = parseInt(value) / 1e18
 
-  return parseFloat(parseInt(value).toFixed(4))
+  return parseFloat(value).toFixed(4)
 }
 
 export const formatNumber = (number) => {
@@ -137,4 +137,87 @@ export const filterSocialIcon = (url) => {
     }
   }
   return icon
+}
+
+export const cdn2lordlessio = (url) => {
+  if (!url) return url
+  const match = /(lordless.oss-cn-hongkong.aliyuncs.com)/g
+  return url.replace(match, 'cdn.lordlessio.com')
+}
+
+/**
+ * 图片转base64格式
+ */
+export const img2Base64 = (url, crossOrigin = 'Anonymous') => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+
+    const c = document.createElement('canvas')
+
+    const cxt = c.getContext('2d')
+
+    img.onload = (e) => {
+      c.width = img.naturalWidth
+      c.height = img.naturalHeight
+
+      cxt.drawImage(img, 0, 0)
+      // console.log('e', e.target)
+      // 得到图片的base64编码数据
+      // document.body.appendChild(c)
+      resolve(c.toDataURL('image/png'))
+    }
+    img.onerror = (err) => {
+      reject(err)
+    }
+
+    crossOrigin && img.setAttribute('crossOrigin', crossOrigin)
+    img.src = url
+  })
+}
+
+export const xhrImg2Base64 = (imgUrl) => {
+  return new Promise((resolve) => {
+    window.URL = window.URL || window.webkitURL
+    var xhr = new XMLHttpRequest()
+    xhr.open('get', imgUrl, true)
+    // 至关重要
+    xhr.responseType = 'blob'
+    xhr.onload = function () {
+      if (this.status === 200) {
+      // 得到一个blob对象
+        var blob = this.response
+        console.log('blob', blob)
+        //  至关重要
+        let oFileReader = new FileReader()
+        oFileReader.onloadend = function (e) {
+          const base64 = e.target.result
+          console.log('方式一》》》》》》》》》', base64)
+          return resolve(e.target.result)
+        }
+        oFileReader.readAsDataURL(blob)
+
+        // ====为了在页面显示图片，可以删除====
+        const img = document.createElement('img')
+        img.onload = function (e) {
+          window.URL.revokeObjectURL(img.src) // 清除释放
+        }
+      }
+    }
+    xhr.send()
+  })
+}
+
+export const filter721Url = (str, size = 140) => {
+  if (!str || typeof str !== 'string') return str
+  const array = str.split('_')
+  return `http://cdn.lordlessio.com/0xsir/source/${array[0]}/${array[1]}.png?x-oss-process=image/resize,w_${size}`
+}
+
+export const resizeImage = (url, size = 140) => {
+  if (!url || typeof url !== 'string' || url.match(/(x-oss-process=image\/resize)/)) return url
+  return `${url}?x-oss-process=image/resize,w_${size}`
+}
+
+export const generateId = function () {
+  return Math.floor(Math.random() * 10000)
 }

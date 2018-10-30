@@ -3,8 +3,7 @@
     <div
       v-if="visible"
       class="sir-ldb-dialog"
-      @click.stop="$emit('close')"
-      @touchmove.prevent>
+      @click.stop="$emit('close')">
     </div>
   </transition>
 </template>

@@ -1,10 +1,10 @@
 <template>
-  <header id="sir-main-header" class="TTFontBold sir-header">
+  <header data-html2canvas-ignore id="sir-main-header" class="TTFontBold sir-header">
     <div class="d-flex col-flex container">
-      <p class="v-flex">
+      <p class="v-flex" @click.stop="$router.push('/')">
         Mr.0x
       </p>
-      <p class="header-icons">
+      <p v-if="showTool" class="header-icons">
         <span class="i-block">
           <sir-search
             :visible.sync="searchModel"
@@ -15,7 +15,7 @@
             <use xlink:href="#icon-search"/>
           </svg>
         </span>
-        <span class="i-block">
+        <span class="i-block" @click.stop="$emit('download')">
           <svg>
             <use xlink:href="#icon-download"/>
           </svg>
@@ -32,6 +32,16 @@ import SirSearch from '@/components/utils/Search'
 import { addClass, removeClass } from 'utils'
 export default {
   name: 'sir-header',
+  props: {
+    showTool: {
+      type: Boolean,
+      default: true
+    },
+    appendToBody: {
+      type: Boolean,
+      default: true
+    }
+  },
   data: () => {
     return {
       searchModel: false
@@ -47,6 +57,9 @@ export default {
     }
   },
   mounted () {
+    if (this.appendToBody) {
+      document.body.appendChild(this.$el)
+    }
     let navbarInverse = false
     const func = () => {
       const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
@@ -65,23 +78,38 @@ export default {
       }
     }
     document.addEventListener('scroll', throttle(func, 300))
+
+    this.$once('hook:beforeDestroy', () => {
+      document.removeEventListener('scroll', func)
+    })
+  },
+  beforeDestroy () {
+    if (this.$el && this.$el.parentNode) {
+      this.$el.parentNode.removeChild(this.$el)
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
   .sir-header {
-    position: absolute;
-    padding-top: 35px;
-    top: 0;
+    position: fixed;
+    padding-top: 31px;
+    padding-bottom: 15px;
+    top: -1px;
     left: 0;
     width: 100%;
-    font-size: 24px;
+    font-size: 20px;
     color: #fff;
+    background-color: transparent;
     transition: all .3s ease;
+    z-index: 99;
     &.fixed {
-      top: 0;
+      // position: fixed;
+      // top: 0;
+      padding-top: 15px;
       background-color: #151618;
+      // z-index: 99;
     }
     .container {
       width: 100%;
@@ -92,8 +120,8 @@ export default {
       margin-left: 15px;
     }
     svg {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       fill: #BDB9FD;
     }
   }
