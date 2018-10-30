@@ -58,10 +58,10 @@ export const sliceStr = (str, { start = 0, end = 8 } = {}) => {
 /**
  * wei to eth
  */
-export const weiToEth = (value) => {
+export const weiToEth = (value, decimals = 18) => {
   if (!value) return value
 
-  value = parseInt(value) / 1e18
+  value = parseInt(value) / Math.pow(10, parseInt(decimals))
 
   return parseFloat(value).toFixed(4)
 }

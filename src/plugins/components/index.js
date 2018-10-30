@@ -4,10 +4,12 @@ const files = [
   'components/layout/Footer.vue',
   'components/svg',
   'components/stories/Blockies.vue',
-  'components/utils/MaskCard.vue',
   'components/stories/popup',
   'components/stories/collapse',
-  'components/stories/collapse/item'
+  'components/stories/collapse/item',
+
+  'components/utils/MaskCard.vue',
+  'components/utils/Loading'
 ]
 
 for (const file of files) {
