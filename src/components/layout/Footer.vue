@@ -18,7 +18,21 @@
               <use xlink:href="#lordless-logo"/>
             </svg>
           </span>
-          <a class="v-flex" href="http://lordless.games" target="_blank">Decentralized task distribution platform with game as carrier</a>
+          <div class="v-flex footer-link-cnt">
+            <a class="TTFontBold i-block" href="http://lordless.games" target="_blank">LORDLESS TEAM</a>
+          </div>
+          <!-- <span class="v-flex">Decentralized task distribution platform with game as carrier</span> -->
+        </li>
+        <li class="d-flex footer-links-item">
+          <span class="i-block line-height-0 footer-link-logo footer-lordless-logo">
+            <svg>
+              <use xlink:href="#lordless-logo"/>
+            </svg>
+          </span>
+          <div class="v-flex footer-link-cnt">
+            <a class="TTFontBold i-block" href="http://lordless.games" target="_blank">Game</a>
+            <p>Decentralized task distribution platform with game as carrier</p>
+          </div>
           <!-- <span class="v-flex">Decentralized task distribution platform with game as carrier</span> -->
         </li>
       </ul>
@@ -29,7 +43,7 @@
 
 <script>
 export default {
-
+  name: 'sir-footer'
 }
 </script>
 
@@ -93,9 +107,17 @@ export default {
   }
   .footer-links-item {
     margin-top: 15px;
-    color: #BDB9FD;
-    a {
-      color: inherit;
+    color: #bbb;
+  }
+  .footer-link-cnt {
+    color: inherit;
+    >a {
+      font-size: 16px;
+      color: #fff;
+      line-height: 22px;
+    }
+    >p {
+      margin-top: 6px;
     }
   }
   .footer-link-logo {

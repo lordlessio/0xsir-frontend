@@ -1,7 +1,7 @@
 import axios from 'axios'
 const instance = axios.create({
   baseURL: process.env.BACKEND_SERVER,
-  timeout: 30000,
+  timeout: 50000,
   withCredentials: true
 })
 // request

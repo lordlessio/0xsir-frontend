@@ -1,15 +1,12 @@
 <template>
   <div>
     <sir-mask-tool
+      ref="sirMask"
       :visible="visible"
       @close="closeModel"/>
     <sir-popup-tool
-      :visible="visible"
-      :list="list"
-      :title="title"
-      :scrollbar="scrollbar"
-      :pullDownRefresh="pullDownRefresh"
-      :pullUpLoad="pullUpLoad"
+      ref="sirPopup"
+      v-bind="$props"
       @open="openModel"
       @close="closeModel"
       @opened="$emit('opened')"
@@ -39,6 +36,10 @@ export default {
       default: 450
     },
     appendToBody: {
+      type: Boolean,
+      default: true
+    },
+    scroll: {
       type: Boolean,
       default: true
     },
@@ -84,8 +85,10 @@ export default {
       removeClass('overflow-hidden', document.body)
     }
   },
-  destroyed () {
+  beforeDestroy () {
+    console.log('beforeDestroy')
     removeClass('overflow-hidden', document.body)
+    // this.$refs.sirPopup.destroy()
   }
 }
 </script>

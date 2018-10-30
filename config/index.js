@@ -13,6 +13,7 @@ module.exports = {
     proxyTable: {
       '/lordless': {
         target: 'http://localhost:7001',
+        // target: 'http://0x.lordless.io',
         changeOrigin: true,
         pathRewrite: {'^/lordless': ''}
       },

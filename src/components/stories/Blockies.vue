@@ -21,7 +21,7 @@ export default {
     },
     seed: {
       type: String,
-      default: '0xsir'
+      default: ''
     },
     size: {
       type: Number,
@@ -38,6 +38,7 @@ export default {
   },
   data: () => {
     return {
+      rendered: false,
       themes: {
         dark: {
           color: '#993399',
@@ -54,7 +55,7 @@ export default {
   },
   watch: {
     seed (val) {
-      if (val) this.reset()
+      if (val && this.rendered) this.reset()
     }
   },
   methods: {
@@ -72,12 +73,13 @@ export default {
       this.$refs.blockies.appendChild(icon)
     },
     reset () {
-      this.$refs.blockies.removeChild(this.$refs.blockies.firstChild)
+      if (this.$refs.blockies.firstChild) this.$refs.blockies.removeChild(this.$refs.blockies.firstChild)
       this.init()
     }
   },
   mounted () {
     this.$nextTick(() => {
+      this.rendered = true
       if (this.autoInit) this.init()
     })
   }

@@ -21,6 +21,8 @@
     "cube-ui": "^1.10.16",
     "date-fns": "^1.29.0",
     "ethereum-blockies": "^0.1.1",
+    "file-saver": "^2.0.0-rc.4",
+    "html2canvas": "^1.0.0-alpha.12",
     "lodash": "^4.17.11",
     "vue": "^2.5.2",
     "vue-cli-plugin-cube-ui": "^0.2.1",
