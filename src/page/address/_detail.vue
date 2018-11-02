@@ -1,35 +1,46 @@
 <template>
   <main id="sir-main" class="sir-main">
-    <sir-loading :visible="!loadingDone"/>
-    <p v-show="download" class="sir-downlowe-powered">Powered by LORDLESS</p>
+    <!-- <sir-loading :visible="!loadingDone"/> -->
     <sir-header
       @search="search"
       @download="preDownload = !preDownload"/>
-    <overview
-      :address="address"
-      :loading="overviewLoading"
-      :overviewDatas="overviewDatas"/>
+    <transition name="sir-detail-fade">
+      <serach-loading
+        key="blocklens-search-loading"
+        v-if="!loadingDone"
+        :address="address"
+        :loading="!loadingDone"/>
+      <div v-else key="blocklens-content">
+        <p v-show="download" class="sir-downlowe-powered">Powered by LORDLESS</p>
+        <overview
+          :address="address"
+          :overviewDatas="overviewDatas"
+          :words="closestWords"
+          :erc20Datas="erc20Datas"/>
 
-    <breakdown
-      :download="download"
-      :loading="nLoading || eLoading"
-      :NFTDatas="NFTDatas"
-      :erc20Datas="erc20Datas"/>
+        <closest
+          :closests="closests"
+          :loading="closestLoading"
+          @search="search"/>
 
-    <closest
-      :closests="closests"
-      :loading="closestLoading"
-      @search="search"/>
+        <breakdown
+          :download="download"
+          :loading="nLoading || eLoading"
+          :NFTDatas="NFTDatas"
+          :erc20Datas="erc20Datas"
+          @search="search"/>
 
-    <transactions
-      v-if="!download"
-      :loading="tLoading"
-      :txs="txDatas.list"
-      @refresh="refreshTxDatas"
-      @loadmore="loadmoreTxDatas"/>
+        <block-transactions
+          v-if="!download"
+          :loading="tLoading"
+          :txs="txDatas.list"
+          @refresh="refreshTxDatas"
+          @loadmore="loadmoreTxDatas"
+          @search="search"/>
 
-    <share-q-r v-if="download"/>
-
+        <share-q-r v-if="download"/>
+      </div>
+    </transition>
     <sir-footer v-if="!download"/>
   </main>
 </template>
@@ -39,9 +50,12 @@ import SirHeader from '@/components/layout/Header.vue'
 import SirFooter from '@/components/layout/Footer.vue'
 import Overview from '@/components/Overview.vue'
 import Breakdown from '@/components/Breakdown.vue'
-import Transactions from '@/components/Transactions.vue'
+import BlockTransactions from '@/components/Transactions.vue'
 import Closest from '@/components/Closest.vue'
 import ShareQR from '@/components/ShareQR.vue'
+import SerachLoading from '@/components/SearchLoading.vue'
+
+import SearchMixin from '@/mixins/search'
 
 import { getInfoById, getNFTs, getErc20, getTxs, getClosests } from 'api'
 
@@ -51,6 +65,7 @@ import Html2Canvas from 'html2canvas'
 
 export default {
   name: 'address-detail',
+  mixins: [SearchMixin],
   data: () => {
     return {
       preDownload: false,
@@ -76,13 +91,14 @@ export default {
 
       txLoading: true,
       txDatas: {
-        list: [],
-        pn: 0,
-        ps: 10
+        list: []
       },
 
       closestLoading: true,
-      closests: []
+      closestsData: {
+        list: [],
+        words: []
+      }
     }
   },
   computed: {
@@ -101,12 +117,21 @@ export default {
     },
     download () {
       return this.loadingDone && this.preDownload
+    },
+    closests () {
+      return this.closestsData.list || []
+    },
+    closestWords () {
+      return this.closestsData.words || []
     }
   },
 
   watch: {
     download (val) {
       if (val) this.convert2Img()
+    },
+    loadingDone (val) {
+      if (val) document.documentElement.scrollTop = 0
     }
   },
   components: {
@@ -114,18 +139,21 @@ export default {
     SirFooter,
     Overview,
     Breakdown,
-    Transactions,
+    BlockTransactions,
     Closest,
-    ShareQR
+    ShareQR,
+    SerachLoading
   },
 
   methods: {
 
-    search (address) {
+    search ({ _id, name }) {
+      if (!this.checkInput(_id)) return
       document.documentElement.scrollTop = 0
-      this.address = address
-      this.init({ address })
-      window.history.pushState(null, null, `/address/${address}`)
+      this.address = _id
+      this.init({ address: _id })
+      this.setBlockSearch({ _id, name })
+      window.history.pushState(null, null, `/address/${_id}`)
     },
 
     saveFile (data, filename) {
@@ -214,7 +242,7 @@ export default {
         const res = await getClosests({ address })
 
         if (res.code === 1000 && res.data) {
-          this.closests = res.data
+          this.closestsData = res.data
         }
         this.closestLoading = false
       } catch (err) {
@@ -222,12 +250,12 @@ export default {
       }
     },
 
-    async initTxDatas ({ address = this.address, pn = 0, ps = this.txDatas.ps } = {}) {
+    async initTxDatas ({ address = this.address } = {}) {
       this.txLoading = true
       try {
-        const txDatas = await this.getTxDatas({ address, pn, ps })
+        const txDatas = await this.getTxDatas({ address })
         this.txLoading = false
-
+        console.log('txDatas', txDatas)
         if (!txDatas) return
         this.txDatas = txDatas
       } catch (err) {
@@ -235,8 +263,8 @@ export default {
       }
     },
 
-    async getTxDatas ({ address = this.address, pn = this.txDatas.pn, ps = this.txDatas.ps } = {}) {
-      const res = await getTxs({ address, pn, ps }) || {}
+    async getTxDatas ({ address = this.address } = {}) {
+      const res = await getTxs({ address }) || {}
       if (res.code === 1000) {
         return res.data
       }

@@ -34,5 +34,10 @@ module.exports = {
   proxyImg: (url) => {
     const params = { url }
     return axios.get('/api/pimg', { params })
+  },
+
+  repushImg: (address) => {
+    const params = { address }
+    return axios.get('/api/repush', { params })
   }
 }

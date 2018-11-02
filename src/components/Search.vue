@@ -1,17 +1,41 @@
 <template>
-  <section class="sir-search-section" :class="{ 'is-inside': inside }">
-    <div class="search-profile">
+  <section class="TTFontBold sir-search-section" :class="{ 'is-inside': inside && showCollapse }">
+    <div class="search-profile" :class="{ 'history': recentSearches.length }">
       <h1>Address Profile</h1>
       <div class="search-input-box" :class="{ 'is-focus': inputFocus, 'is-error': inputError }" :data-error="inputErrorTxt">
         <div class="d-flex row-flex search-input-container">
           <input v-model="searchModel" class="TTFontMedium v-flex search-input" type="text" placeholder="Enter Ethereum address" @focus="inputFocus = true" @blur="inputFocus = false"/>
-          <span class="i-block text-center search-input-icon" @click.stop="$emit('search', searchModel)">Q</span>
+          <span class="d-iflex auto-center text-center search-input-icon" @click.stop="$emit('search', { _id: searchModel })">
+            <svg>
+              <use xlink:href="#icon-search"/>
+            </svg>
+          </span>
         </div>
+      </div>
+      <div v-if="recentSearches.length && showCollapse" class="recent-searches">
+        <p class="d-flex align-center recent-search-title">
+          <span class="i-block line-height-0 recent-search-icon">
+            <svg>
+              <use xlink:href="#icon-history"/>
+            </svg>
+          </span>
+          <span>Recent searches</span>
+        </p>
+        <ul class="full-width d-flex row-flex f-wrap align-center">
+          <li v-for="(recent, index) of recentSearches" :key="index">
+            <span
+              class="i-block sir-popular-address"
+              @click.stop="$emit('search', recent)">
+                <span v-if="recent.name">{{ recent.name }}</span>
+                <span v-else class="text-lower">{{ recent._id | splitAddress }}</span>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
     <div class="search-popular">
       <h2 class="sir-title-block">Popular Addresses</h2>
-      <p class="search-popular-desc">Check out addresses shown below to get a quick start.</p>
+      <p class="TTFontMedium search-popular-desc">Check out addresses shown below to get a quick start.</p>
       <sir-collapse v-model="activeNames" class="sir-collapse-box" :class="{ 'is-active': showCollapse }">
         <sir-collapse-item
           v-for="(group, index) of Object.keys(groups)" :key="index"
@@ -21,7 +45,7 @@
           <span
             v-for="(item, index) of groups[group]" :key="index"
             class="i-block sir-popular-address"
-            @click.stop="$emit('search', item._id)">{{ item.name }}</span>
+            @click.stop="$emit('search', item)">{{ item.name }}</span>
         </sir-collapse-item>
       </sir-collapse>
     </div>
@@ -30,7 +54,9 @@
 
 <script>
 import { getGroups } from 'api'
+import SearchMixin from '@/mixins/search'
 export default {
+  mixins: [SearchMixin],
   props: {
     visible: {
       type: Boolean,
@@ -56,6 +82,13 @@ export default {
       activeNames: vm.actives
     }
   },
+  computed: {
+    recentSearches () {
+      const localData = localStorage.getItem('blocklens_searches')
+      if (!localData) return []
+      return JSON.parse(localData)
+    }
+  },
   watch: {
     visible (val) {
       if (val) {
@@ -67,8 +100,7 @@ export default {
 
     searchModel (val) {
       if (val) {
-        const match = /^(0x)([A-Za-z0-9]{40})$/
-        const bool = val.match(match)
+        const bool = this.checkInput(val)
         if (!bool) this.inputErrorTxt = 'Enter the correct Ethereum address.'
         this.inputError = !bool
       } else this.inputError = false
@@ -125,9 +157,19 @@ export default {
   .search-profile {
     padding-top: 150px;
     padding-bottom: 100px;
+    font-size: 30px;
+    transition: all .3s ease-in-out;
     >h1 {
       margin-bottom: 35px;
-      font-size: 30px;
+      transition: all .3s ease-in-out;
+    }
+    &.history {
+      padding-top: 60px;
+      padding-bottom: 50px;
+      font-size: 18px;
+      >h1 {
+        margin-bottom: 25px;
+      }
     }
   }
   .search-input-box {
@@ -185,7 +227,31 @@ export default {
   .search-input-icon {
     width: 64px;
     background-color: #7D72F0;
+    >svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+    }
   }
+
+
+  .recent-searches {
+    margin-top: 32px;
+  }
+  .recent-search-title {
+    margin-bottom: 15px;
+    font-size: 18px;
+    color: #BDB9FD;
+  }
+  .recent-search-icon {
+    margin-right: 8px;
+    >svg {
+      width: 18px;
+      height: 18px;
+      fill: #BDB9FD;
+    }
+  }
+
 
   .search-popular {
     >h2 {
@@ -202,6 +268,7 @@ export default {
     margin-top: 5px;
     margin-right: 10px;
     padding: 2px 6px;
+    line-height: 20px;
     font-family: $--font-TTNormsMedium;
     font-size: 12px;
     color: #fff;

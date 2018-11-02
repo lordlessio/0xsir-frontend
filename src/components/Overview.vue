@@ -1,12 +1,7 @@
 <template>
-  <section class="text-center relative sir-overview">
-    <!-- <transition name="sir-skeleton-fade">
-      <div v-if="loading" class="sir-overview-skeleton">
-        <h1></h1>
-      </div>
-    </transition> -->
-    <transition name="sir-hide-fade" mode="out-in">
-      <div v-if="loading" class="overview-skeleton" key="overview-skeleton">
+  <section class="text-center relative sir-overview" :class="{ 'info': !unInfo }">
+    <!-- <transition name="sir-hide-fade" mode="out-in"> -->
+      <!-- <div v-if="loading" class="overview-skeleton" key="overview-skeleton">
         <div class="overview-skeleton-container skeleton-animate">
           <h2></h2>
           <p class="overview-skeleton-cloudy">
@@ -21,10 +16,10 @@
             </li>
           </ul>
         </div>
-      </div>
-      <div v-else key="overview-content">
+      </div> -->
+      <!-- <div v-else key="overview-content"> -->
         <div class="overview-header">
-          <div v-if="!overviewDatas.info || !overviewDatas.info._id" class="relative index-1">
+          <div v-if="unInfo" class="relative index-1">
             <sir-blockies class="overview-blockies" :seed="address"/>
             <h1 @click.stop="isFullAddress = !isFullAddress">
               <span v-if="!isFullAddress" class="sir-title-block bottom lg">{{ address | sliceStr({ end: 11 }) }}...</span>
@@ -38,7 +33,7 @@
               </span>
               <div class="text-left relative index-1 overview-contract-info" :class="{ 'no-logo': !overviewDatas.info.logo }">
                 <sir-blockies v-if="!overviewDatas.info.logo" class="overview-blockies" :seed="address"/>
-                <h1 class="text-break" :style="overviewDatas.info.name.length > 16 ? 'font-size: 24px' : ''">{{ overviewDatas.info.name }}</h1>
+                <h1 class="text-ellipsis" :style="overviewDatas.info.name.length > 16 ? 'font-size: 24px' : ''">{{ overviewDatas.info.name }}</h1>
                 <p v-if="overviewDatas.info.website" class="overview-contract-website">
                   <a :href="overviewDatas.info.website" target="_blank">{{ overviewDatas.info.website }}</a>
                 </p>
@@ -47,8 +42,8 @@
             </div>
             <p v-if="overviewDatas.info.logo" class="text-left text-break overview-contract-address outside">{{ address }}</p>
             <p v-if="overviewDatas.info.desc" class="text-left text-break overview-contract-desc">{{ overviewDatas.info.desc.zh }}</p>
-            <ul v-if="overviewDatas.info.socialLinks.length" class="d-flex flex-row overview-contract-links">
-              <li v-for="social of overviewDatas.info.socialLinks" :key="social._id">
+            <ul v-if="overviewDatas.info.socialLinks && overviewDatas.info.socialLinks.length" class="d-flex flex-row overview-contract-links">
+              <li v-if="filterSocialIcon(social.link)" v-for="social of overviewDatas.info.socialLinks" :key="social._id">
                 <svg class="overview-social-svg">
                   <use :xlink:href="social.link | filterSocialIcon"/>
                 </svg>
@@ -59,14 +54,15 @@
                 {{ cat }}
               </li>
             </ul>
-            <p class="overview-markline overview-contract-markline"></p>
           </div>
         </div>
-        <div class="overview-address-cloud">
-          <img src="/static/wordcloud.svg"/>
-          <p>Address profile cloud</p>
+        <div v-if="words.length" class="overview-address-cloud">
+          <p v-if="!unInfo" class="overview-markline overview-cloud-markline"></p>
+          <!-- <img src="/static/wordcloud.svg"/> -->
+          <div id="overview-word-cloud" class="overview-word-cloud"></div>
+          <p class="overview-cloud-title">Address profile cloud</p>
         </div>
-        <p class="overview-markline"></p>
+        <p v-if="unInfo" class="overview-markline"></p>
         <ul class="d-flex align-center overview-tx-ul overview-tx-timeline">
           <li class="v-flex">
             <p class="overview-text">{{ new Date(parseInt(overviewDatas.txTimeline.first.timeStamp) * 1000) | dateFormat }}</p>
@@ -83,16 +79,19 @@
             <p>Max transaction</p>
           </li> -->
           <li class="v-flex">
-            <p class="overview-text">{{ overviewDatas.txTimeline.total }}</p>
+            <p class="overview-text">{{ erc20Datas.eth.txns }}</p>
             <p>Transactions</p>
           </li>
         </ul>
-      </div>
-    </transition>
+      <!-- </div> -->
+    <!-- </transition> -->
   </section>
 </template>
 
 <script>
+import * as d3 from 'd3'
+import Cloud from 'd3-cloud'
+import { filterSocialIcon } from 'utils'
 export default {
   name: 'sir-overview',
   props: {
@@ -113,15 +112,126 @@ export default {
         }
       }
     },
+    erc20Datas: {
+      type: Object,
+      default: () => {
+        return {
+          eth: {},
+          list: []
+        }
+      }
+    },
     download: {
       type: Boolean,
       default: false
+    },
+    words: {
+      type: Array,
+      default: () => []
     }
   },
   data: () => {
     return {
       isFullAddress: false
     }
+  },
+  computed: {
+    unInfo () {
+      return !this.overviewDatas.info || !this.overviewDatas.info._id
+    }
+  },
+  methods: {
+    filterSocialIcon () {
+      return filterSocialIcon(...arguments)
+    },
+    // sizeFunc (list) {
+    //   const _list = []
+
+    // },
+    drawCloud (words = this.words) {
+      const dom = document.getElementById('overview-word-cloud')
+      if (!dom) return
+      const { width, height } = document.getElementById('overview-word-cloud').getBoundingClientRect()
+
+      const log = 0.25
+      const max = Math.pow(words[0].count, log)
+      const layout = Cloud()
+        .size([width, height])
+        .words(
+          words.map(function (d) {
+            let _size = Math.pow(d.count, log)
+            _size = 40 * _size / max
+            _size = _size < 16 ? 16 : _size
+
+            _size = _size > 450 / d.name.length ? 450 / d.name.length : _size
+
+            console.log('====', d.name.length, _size)
+
+            return { text: d.name, size: _size }
+          })
+        )
+        .random(function () {
+          return 0.5
+        })
+        .padding(0)
+        .rotate(function () {
+          // return words.length > 15 ? ~~(Math.random() * 2) * 35 : 0
+          return ~~(Math.random() * 2) * 35
+        })
+        .font('Impact')
+        .fontSize(function (d) {
+          return d.size
+        })
+        .on('end', draw)
+
+      layout.start()
+
+      function draw (words) {
+        // var fill = d3.scale.category20();
+        // var fill = d3.schemeCategory10
+        // var color = d3.scaleOrdinal("1231");
+        // console.log(color);
+        d3.select('#overview-word-cloud')
+          .append('svg')
+          .attr('width', layout.size()[0])
+          .attr('height', layout.size()[1])
+          .append('g')
+        // .style("fill", function(d) {
+        //   return fill(d.text.toLowerCase());
+        // })
+          .attr(
+            'transform',
+            'translate(' + layout.size()[0] / 2 + ',' + layout.size()[1] / 2 + ')'
+          )
+          .selectAll('text')
+          .data(words)
+          .enter()
+          .append('text')
+          .style('font-size', function (d) {
+            return d.size + 'px'
+          })
+          // .style('fill', function (d) {
+          //   return 'red'
+          // })
+          .style('fill', function (t) {
+            console.log('==== fill', t)
+            return `rgba(125, 114, 240, ${t.size / 30})`
+          })
+          .style('font-family', 'Impact')
+          .attr('text-anchor', 'middle')
+          .attr('transform', function (d) {
+            return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')'
+          })
+          .text(function (d) {
+            return d.text
+          })
+      }
+    }
+  },
+  mounted () {
+    this.$nextTick(() => {
+      this.drawCloud()
+    })
   }
 }
 </script>
@@ -130,10 +240,15 @@ export default {
   .sir-overview {
     padding-bottom: 40px;
     color: #BDB9FD;
+    &.info {
+      .overview-header {
+        padding-bottom: 30px;
+      }
+    }
   }
   .overview-header {
-    padding-top: 45px;
-    padding-bottom: 65px;
+    padding-top: 70px;
+    padding-bottom: 60px;
     h1 {
       font-size: 36px;
     }
@@ -187,7 +302,9 @@ export default {
     margin-right: 12px;
   }
   .overview-contract-info {
+    max-width: 100%;
     font-size: 14px;
+    box-sizing: border-box;
     &.no-logo {
       padding-left: 16px;
     }
@@ -233,9 +350,20 @@ export default {
   }
   .overview-address-cloud {
     margin-bottom: 42px;
-    >p {
-      margin-top: 6px;
+    >img {
+      box-shadow: 0 0 20px 3px #7D72F0;
     }
+  }
+  .overview-cloud-title {
+    margin-top: 18px;
+  }
+  .overview-cloud-markline {
+    margin-bottom: 42px;
+  }
+  .overview-word-cloud {
+    width: 100%;
+    height: 200px;
+    box-shadow: 0 0 20px 3px #7D72F0;
   }
   .overview-tx-timeline {
     margin-top: 42px;
@@ -251,40 +379,40 @@ export default {
   }
 
   // overview-skeleton
-  .overview-skeleton-container {
-    padding-top: 45px;
-    >h2 {
-      width: 80%;
-      height: 30px;
-      background-color: $--skeleton-light;
-      border-radius: 3px;
-    }
-  }
-  .overview-skeleton-cloudy {
-    margin-top: 35px;
-    padding: 50px 0;
-    width: 100%;
-    background-color: rgba(225, 223, 252, .5);
-    border-radius: 3px;
-    >svg {
-      width: 80px;
-      height: 80px;
-      fill: $--skeleton-light;
-    }
-  }
-  .overview-skeleton-li {
-    margin-top: 30px;
-    >p {
-      height: 18px;
-      background-color: $--skeleton-light;
-      border-radius: 3px;
-      &:nth-of-type(1) {
-        width: 55%;
-      }
-      &:nth-of-type(2) {
-        margin-top: 10px;
-        width: 90%;
-      }
-    }
-  }
+  // .overview-skeleton-container {
+  //   padding-top: 45px;
+  //   >h2 {
+  //     width: 80%;
+  //     height: 30px;
+  //     background-color: $--skeleton-light;
+  //     border-radius: 3px;
+  //   }
+  // }
+  // .overview-skeleton-cloudy {
+  //   margin-top: 35px;
+  //   padding: 50px 0;
+  //   width: 100%;
+  //   background-color: rgba(225, 223, 252, .5);
+  //   border-radius: 3px;
+  //   >svg {
+  //     width: 80px;
+  //     height: 80px;
+  //     fill: $--skeleton-light;
+  //   }
+  // }
+  // .overview-skeleton-li {
+  //   margin-top: 30px;
+  //   >p {
+  //     height: 18px;
+  //     background-color: $--skeleton-light;
+  //     border-radius: 3px;
+  //     &:nth-of-type(1) {
+  //       width: 55%;
+  //     }
+  //     &:nth-of-type(2) {
+  //       margin-top: 10px;
+  //       width: 90%;
+  //     }
+  //   }
+  // }
 </style>

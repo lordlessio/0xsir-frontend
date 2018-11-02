@@ -56,6 +56,14 @@ export const sliceStr = (str, { start = 0, end = 8 } = {}) => {
 }
 
 /**
+ * 截取显示部分地址
+ */
+export const splitAddress = (address, { before = 5, end = 3, symbol = '…' } = {}) => {
+  if (typeof address !== 'string') return address
+  return address.slice(0, before) + symbol + address.slice(-end)
+}
+
+/**
  * wei to eth
  */
 export const weiToEth = (value, decimals = 18) => {
@@ -79,8 +87,8 @@ export const formatNumber = (number) => {
   ]
   let str
   for (const s of symbols) {
-    if (number / (s.num * 10) >= 1) {
-      str = `${Math.ceil(number / s.num)}${s.symbol}`
+    if (number / s.num >= 1) {
+      str = `${parseFloat(number / s.num).toFixed(1)}${s.symbol}`
       break
     }
   }
@@ -121,6 +129,7 @@ export const toggleClass = (name, dom) => {
   else addClass(name, dom)
 }
 export const filterSocialIcon = (url) => {
+  if (!url) return null
   const mathchs = [
     /https:\/\/(twitter).com/,
     /https:\/\/(t).me/,
@@ -214,7 +223,9 @@ export const filter721Url = (str, size = 140) => {
 }
 
 export const resizeImage = (url, size = 140) => {
-  if (!url || typeof url !== 'string' || url.match(/(x-oss-process=image\/resize)/)) return url
+  if (!url || typeof url !== 'string') return url
+  if (url.match(/(x-oss-process=image\/resize)/)) return url
+
   return `${url}?x-oss-process=image/resize,w_${size}`
 }
 
