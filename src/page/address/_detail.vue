@@ -1,24 +1,28 @@
 <template>
-  <main id="sir-main" class="sir-main">
+  <main id="sir-main" class="sir-main" :class="{ 'download': download }">
     <!-- <sir-loading :visible="!loadingDone"/> -->
     <sir-header
+      :loading="!loadingDone"
+      :hide="download"
       @search="search"
       @download="preDownload = !preDownload"/>
-    <transition name="sir-detail-fade">
+    <transition name="sir-detail-fade" mode="out-in" @enter="toTop">
       <serach-loading
-        key="blocklens-search-loading"
-        v-if="!loadingDone"
+        key="lens-search-loading"
+        v-if="!loadingDone || !erc20Datas.eth.txns"
         :address="address"
-        :loading="!loadingDone"/>
-      <div v-else key="blocklens-content">
-        <p v-show="download" class="sir-downlowe-powered">Powered by LORDLESS</p>
+        :error="loadingError"/>
+      <div v-else key="lens-content">
+        <!-- <p v-show="download" class="sir-downlowe-powered">Powered by LORDLESS</p> -->
         <overview
+          :download="download"
           :address="address"
           :overviewDatas="overviewDatas"
           :words="closestWords"
           :erc20Datas="erc20Datas"/>
 
         <closest
+          v-if="!download"
           :closests="closests"
           :loading="closestLoading"
           @search="search"/>
@@ -42,6 +46,15 @@
       </div>
     </transition>
     <sir-footer v-if="!download"/>
+    <lens-download-popup
+      ref="lensDownload"
+      :visible="download"
+      :loaded="downloadLoaded"
+      @close="closeDownload"
+      @closed="downloadClosed"
+      @opened="drawImage">
+      <div id="popup-download-img"></div>
+    </lens-download-popup>
   </main>
 </template>
 
@@ -60,6 +73,8 @@ import SearchMixin from '@/mixins/search'
 import { getInfoById, getNFTs, getErc20, getTxs, getClosests } from 'api'
 
 import Html2Canvas from 'html2canvas'
+
+// window.Html2Canvas = Html2Canvas
 // import Canvas2Img from 'utils/canvas2Img'
 // import SaveAs from 'file-saver'
 
@@ -68,6 +83,7 @@ export default {
   mixins: [SearchMixin],
   data: () => {
     return {
+      downloadLoaded: false,
       preDownload: false,
       // address: '0x533A99a1292C7ddB74621BF288F50fa34D42C79E',
       address: '',
@@ -112,8 +128,10 @@ export default {
       return this.nLoading || this.txLoading
     },
     loadingDone () {
-      // const done = this.eLoading && this.nLoading && this.tLoading
       return !(this.eLoading || this.nLoading || this.tLoading || this.closestLoading)
+    },
+    loadingError () {
+      return this.loadingDone && !this.erc20Datas.eth.txns
     },
     download () {
       return this.loadingDone && this.preDownload
@@ -127,9 +145,6 @@ export default {
   },
 
   watch: {
-    download (val) {
-      if (val) this.convert2Img()
-    },
     loadingDone (val) {
       if (val) document.documentElement.scrollTop = 0
     }
@@ -146,6 +161,9 @@ export default {
   },
 
   methods: {
+    toTop () {
+      document.documentElement.scrollTop = 0
+    },
 
     search ({ _id, name }) {
       if (!this.checkInput(_id)) return
@@ -166,24 +184,29 @@ export default {
       saveLink.dispatchEvent(event)
     },
 
-    convert2Img () {
+    async drawImage () {
       setTimeout(() => {
         Html2Canvas(document.getElementById('sir-main'), {
+          allowTaint: true,
           useCORS: true,
           scale: window.devicePixelRatio + 1
         }).then((canvas) => {
           const img = document.createElement('img')
           img.className = 'sir-download-img full-width'
           img.src = canvas.toDataURL('image/png', 1)
+          this.downloadLoaded = true
           // console.log('canvas', canvas, canvas.toDataURL())
 
-          document.body.appendChild(img)
-        // this.saveFile(canvas.toDataURL(), 'user-test.png')
-        // canvas.toBlob((blob) => {
-        // SaveAs(canvas.toDataURL('image/png', 1), 'user.png')
-        // })
+          this.$nextTick(() => document.getElementById('popup-download-img').appendChild(img))
         })
       }, 1000)
+    },
+
+    closeDownload () {
+      this.preDownload = false
+    },
+    downloadClosed () {
+      this.downloadLoaded = false
     },
 
     async init ({ address = this.address } = {}) {
@@ -329,7 +352,15 @@ export default {
     max-width: 768px;
     min-height: 100%;
     background-color: #151618;
+    background-image: url(~/static/header-bg.jpg);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
     @include viewport-unit(min-height, 100vh);
+    &.download {
+      width: 375px;
+      padding-top: 30px;
+      box-sizing: border-box;
+    }
   }
   .sir-downlowe-powered {
     position: absolute;

@@ -91,6 +91,7 @@ export default {
     // position: relative;
     width: inherit;
     height: inherit;
+    opacity: .5;
     /deep/ canvas {
       border-radius: inherit;
     }

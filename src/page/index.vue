@@ -38,7 +38,10 @@ export default {
   .search-main {
     padding: 30px;
     color: #fff;
-    background-color: #151618;
+    background-image: url(~/static/header-bg.jpg);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    // background-color: #151618;
   }
   .search-component {
     margin-bottom: 50px;

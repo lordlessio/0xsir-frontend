@@ -1,7 +1,12 @@
 <template>
   <section class="TTFontBold sir-search-section" :class="{ 'is-inside': inside && showCollapse }">
     <div class="search-profile" :class="{ 'history': recentSearches.length }">
-      <h1>Address Profile</h1>
+      <h1 class="d-flex align-center">
+        <svg class="search-mirror-icon">
+          <use xlink:href="#icon-mirror"/>
+        </svg>
+        <span class="i-block">Address Profile</span>
+      </h1>
       <div class="search-input-box" :class="{ 'is-focus': inputFocus, 'is-error': inputError }" :data-error="inputErrorTxt">
         <div class="d-flex row-flex search-input-container">
           <input v-model="searchModel" class="TTFontMedium v-flex search-input" type="text" placeholder="Enter Ethereum address" @focus="inputFocus = true" @blur="inputFocus = false"/>
@@ -84,7 +89,7 @@ export default {
   },
   computed: {
     recentSearches () {
-      const localData = localStorage.getItem('blocklens_searches')
+      const localData = localStorage.getItem('lens_searches')
       if (!localData) return []
       return JSON.parse(localData)
     }
@@ -172,10 +177,17 @@ export default {
       }
     }
   }
+  .search-mirror-icon {
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+  }
   .search-input-box {
     position: relative;
     border: 1px solid #7D72F0;
     border-radius: 5px;
+    background-color: #151618;
     &.is-focus {
       box-shadow: 0 0 10px 5px rgba(125, 114, 240, .5);
       &.is-error {

@@ -17,6 +17,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: $--font-TTNormsMedium;
+  background-color: #151618;
   // height: 100%;
   // overflow: auto;
   // -webkit-overflow-scrolling: touch;

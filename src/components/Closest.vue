@@ -236,19 +236,19 @@ export default {
       width: 10px;
       height: 12px;
       fill: inherit;
-      stroke: inherit;
-      stroke-width: 2;
+      // stroke: inherit;
+      // stroke-width: 2;
     }
     >span {
       width: 45px;
     }
     &.up {
       fill: #EB8785;
-      stroke: #EB8785;
+      // stroke: #EB8785;
     }
     &.down {
       fill: #69D1C3;
-      stroke: #69D1C3;
+      // stroke: #69D1C3;
       svg {
         transform: rotate(180deg);
       }
