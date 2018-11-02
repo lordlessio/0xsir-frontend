@@ -37,7 +37,7 @@
         <div v-if="searchModel" class="lens-header-search">
           <div class="d-flex flex-row">
             <input ref="header-search-input" v-model="searchInput" class="TTFontMedium v-flex lens-search-input" type="text" placeholder="Enter Ethereum address"/>
-            <span class="d-iflex auto-center text-center search-input-icon" @click.stop="search({ _id: searchModel })">
+            <span class="d-iflex auto-center text-center search-input-icon" @click.stop="search({ _id: searchInput })">
               <svg>
                 <use xlink:href="#icon-search"/>
               </svg>
@@ -108,7 +108,6 @@ export default {
   computed: {
     recentSearches () {
       const localData = localStorage.getItem('lens_searches')
-      console.log('localData', localData)
       if (!localData) return []
       return JSON.parse(localData)
     }
@@ -126,6 +125,7 @@ export default {
   },
   methods: {
     search (e) {
+      console.log('00000', e)
       this.searchModel = false
       this.$emit('search', e)
     },
