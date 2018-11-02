@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import SirMaskTool from './tool/Mask'
 import SirPopupTool from './tool/Popup'
 
 import { addClass, removeClass } from 'utils'
@@ -71,7 +70,6 @@ export default {
     }
   },
   components: {
-    SirMaskTool,
     SirPopupTool
   },
   methods: {

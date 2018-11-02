@@ -1,253 +1,123 @@
 <template>
-  <section class="TTFontBold relative sir-breakdown">
-    <!-- <transition name="sir-hide-fade" mode="out-in">
-      <div v-if="loading" key="breakdown-skeleton" class="sir-breakdown-skeleton">
-        <div class="skeleton-animate">
-          <h2></h2>
-          <div class="erc20-skeleton-container">
-            <p></p>
-            <div>
-              <p></p>
-              <p></p>
-            </div>
-            <ul>
-              <li></li>
-              <li></li>
-              <li></li>
-            </ul>
+  <section class="TTFontBold relative sir-breakdown" :class="{ 'download': download }">
+    <h2 class="download-hide sir-title-block">Breakdown</h2>
+    <div class="d-flex sir-section-toolbar break-toolbar">
+      <p>
+        <span>ETH & ERC20 </span>
+        <span class="download-hide">({{ erc20Datas.total }})</span>
+        <span class="download-show download-assets-total">(5 of {{ erc20Datas.total }})</span>
+      </p>
+      <p v-if="!download" class="v-flex d-flex align-center justify-end text-right" @click.stop="erc20Pupup = true">
+        <span class="line-height-0">
+          <svg>
+            <use xlink:href="#icon-menu"/>
+          </svg>
+        </span>
+        <span>More</span>
+      </p>
+    </div>
+    <p class="download-hide TTFontMedium break-holding">Holding <span>$ {{ erc20Assets.totalValue | formatDecimal }}</span></p>
+    <div class="download-hide break-progress-bar">
+      <p class="d-flex align-center progress-bar-bg">
+        <span
+          v-for="(percent, index) of pecentages"
+          :key="index"
+          :style="`width: ${percent}%;`"></span>
+      </p>
+    </div>
+    <div>
+      <ul v-show="download" class="d-flex flex-row f-wrap justify-start download-erc20-assets text-center">
+        <li class="d-iflex flex-col auto-center download-erc20-item" v-for="(erc20, index) of erc20Datas.list.slice(0, 5)" :key="index">
+          <span class="i-block erc20-assets-logo download">
+            <img :src="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`" crossOrigin="anonymous" @load.once="onImgLoad" @error.once="onImgError"/>
+          </span>
+          <span class="i-block TTFontMedium download-erc20-symbol">{{ erc20.symbol | sliceStr({ end: 4 }) }}{{ erc20.symbol.length > 4 ? '..' : '' }}</span>
+        </li>
+      </ul>
+      <ul v-show="!download" class="break-erc20-assets text-center">
+        <li
+          v-for="(erc20, index) of erc20Assets.list"
+          :key="index"
+          class="d-flex align-center text-center erc20-assets-item">
+          <p class="v-flex d-flex align-center text-left erc20-assets-name">
+            <span class="i-block erc20-assets-logo margin" v-lazy:background-image="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)">
+              <!-- <img :src="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
+            </span>
+            <span>{{ erc20.symbol }}</span>
+          </p>
+          <p class="TTFontMedium text-left erc20-assets-value">$ {{ erc20.value | formatNumber }}</p>
+          <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
+        </li>
+      </ul>
+    </div>
+
+    <div v-show="download && NFTDatas.total" class="download-NFTs-assets">
+      <p>NFTs<span class="download-assets-total"> (4 of {{ NFTDatas.total }})</span></p>
+      <ul class="d-flex f-wrap TTFontMedium text-center">
+        <li
+          v-for="(NFT, index) of downloadNFTs" :key="index"
+          class="d-iflex flex-col align-center auto-center download-NFTs-item">
+          <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': NFT.assets.name === 'CryptoKitties' }">
+            <img :src="NFT.poster" @load.once="onImgLoad" @error.once="onImgError"/>
+          </span>
+          <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': NFT.tokenId.toString().length > 6 }">#{{ NFT.tokenId }}</p>
+        </li>
+        <!-- <li class="auto-center download-NFTs-item" v-for="(NFTs, index) of NFTAssets" :key="index">
+          <ul>
+            <li
+              v-for="(item, cIndex) of NFTs.list.slice(0, 4)" :key="cIndex"
+              class="d-iflex flex-col align-center NFTs-assets-item">
+              <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.name === 'CryptoKitties' }">
+                <img :src="item.poster" @load.once="onImgLoad" @error.once="onImgError"/>
+              </span>
+              <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
+            </li>
+          </ul>
+        </li> -->
+      </ul>
+    </div>
+    <div v-show="!download" class="break-NFTs-assets">
+      <ul>
+        <li v-for="(asset, index) of NFTAssets" :key="index">
+          <p class="d-flex break-toolbar NFTs-toolbar">
+            {{ asset.name }} ({{ asset.total }})
+          </p>
+          <div :ref="`scroll-box-${asset.name}`" class="relative">
+            <span
+              class="scroll-list-symbol left"
+              :class="{ 'show': scrollBar.left[asset.name] }"
+              @click.stop="scrollHandle(asset.name, 'left')"></span>
+            <span
+              class="scroll-list-symbol right"
+              :class="{ 'show': !scrollBar.right[asset.name] && asset.list.length > 4 }"
+              @click.stop="scrollHandle(asset.name, 'right')"></span>
+            <cube-scroll
+              :ref="`${asset.name}_scroll`"
+              :data="asset.list"
+              direction="horizontal"
+              class="horizontal-scroll-list-wrap"
+              :options="{ scrollBar: true }"
+              :scroll-events="scrollEvents"
+              @scroll-end="scrollEndListen($event, asset.name)">
+              <ul class="d-flex text-nowrap NFTs-assets-ul">
+                <li
+                  v-for="(item, index) of asset.list" :key="index"
+                  class="d-iflex flex-col align-center NFTs-assets-item">
+                  <span
+                    class="i-block NFTs-asset-poster"
+                    :class="{ 'cryptokitties': item.name === 'CryptoKitties' }"
+                    >
+                    <img v-lazy="resizeImage(item.poster)" @load.once="loadedTest"/>
+                  </span>
+                  <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
+                </li>
+              </ul>
+            </cube-scroll>
           </div>
-        </div>
-      </div> -->
-      <!-- <div v-else key="breakdown-content"> -->
-        <h2 class="sir-title-block">Breakdown</h2>
-        <div class="d-flex sir-section-toolbar break-toolbar">
-          <p>
-            ETH & ERC20 ({{ erc20Datas.total }})
-          </p>
-          <p v-if="erc20Datas.total > erc20Ps && !download" class="v-flex d-flex align-center justify-end text-right" @click.stop="erc20Pupup = true">
-            <span class="line-height-0">
-              <svg>
-                <use xlink:href="#icon-menu"/>
-              </svg>
-            </span>
-            <span>More</span>
-          </p>
-        </div>
-        <p class="TTFontMedium break-holding">Holding <span>$ {{ erc20Assets.totalValue | formatDecimal }}</span></p>
-        <div class="break-progress-bar">
-          <p class="d-flex align-center progress-bar-bg">
-            <span
-              v-for="(percent, index) of pecentages"
-              :key="index"
-              :style="`width: ${percent}%;`"></span>
-          </p>
-        </div>
-        <div>
-          <ul v-show="download" class="d-flex flex-row f-wrap justify-start download-erc20-assets text-center">
-            <li class="d-iflex flex-col auto-center download-erc20-item" v-for="(erc20, index) of erc20Datas.list.slice(0, 15)" :key="index">
-              <span class="i-block erc20-assets-logo download">
-                <img :src="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`" crossOrigin="anonymous" @load.once="onImgLoad" @error.once="onImgError"/>
-              </span>
-              <span class="i-block TTFontMedium download-erc20-symbol">{{ erc20.symbol | sliceStr({ end: 4 }) }}{{ erc20.symbol.length > 4 ? '..' : '' }}</span>
-            </li>
-          </ul>
-          <ul v-show="!download" class="break-erc20-assets text-center">
-            <li
-              v-for="erc20 of erc20Assets.list"
-              :key="erc20.symbol"
-              class="d-flex align-center text-center erc20-assets-item">
-              <p class="v-flex d-flex align-center text-left erc20-assets-name">
-                <span class="i-block erc20-assets-logo margin" v-lazy:background-image="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)">
-                  <!-- <img :src="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
-                </span>
-                <span>{{ erc20.symbol }}</span>
-              </p>
-              <p class="TTFontMedium text-left erc20-assets-value">$ {{ erc20.value | formatNumber }}</p>
-              <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
-            </li>
-          </ul>
-        </div>
-
-        <div v-show="download && NFTDatas.total" class="download-NFTs-assets">
-          <p>NFTs</p>
-          <ul class="d-flex f-wrap TTFontMedium text-center">
-            <li
-              v-for="(NFT, index) of downloadNFTs" :key="index"
-              class="d-iflex flex-col align-center auto-center download-NFTs-item">
-              <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': NFT.assets.name === 'CryptoKitties' }">
-                <img :src="NFT.poster" @load.once="onImgLoad" @error.once="onImgError"/>
-              </span>
-              <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': NFT.tokenId.toString().length > 6 }">#{{ NFT.tokenId }}</p>
-            </li>
-            <!-- <li class="auto-center download-NFTs-item" v-for="(NFTs, index) of NFTAssets" :key="index">
-              <ul>
-                <li
-                  v-for="(item, cIndex) of NFTs.list.slice(0, 4)" :key="cIndex"
-                  class="d-iflex flex-col align-center NFTs-assets-item">
-                  <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.name === 'CryptoKitties' }">
-                    <img :src="item.poster" @load.once="onImgLoad" @error.once="onImgError"/>
-                  </span>
-                  <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
-                </li>
-              </ul>
-            </li> -->
-          </ul>
-        </div>
-        <div v-show="!download" class="break-NFTs-assets">
-          <ul>
-            <li v-for="(asset, index) of NFTAssets" :key="index">
-              <p class="d-flex break-toolbar NFTs-toolbar">
-                {{ asset.name }} ({{ asset.total }})
-              </p>
-              <div :ref="`scroll-box-${asset.name}`" class="relative">
-                <span
-                  class="scroll-list-symbol left"
-                  :class="{ 'show': scrollBar.left[asset.name] }"
-                  @click.stop="scrollHandle(asset.name, 'left')"></span>
-                <span
-                  class="scroll-list-symbol right"
-                  :class="{ 'show': !scrollBar.right[asset.name] && asset.list.length > 4 }"
-                  @click.stop="scrollHandle(asset.name, 'right')"></span>
-                <cube-scroll
-                  :ref="`${asset.name}_scroll`"
-                  :data="asset.list"
-                  direction="horizontal"
-                  class="horizontal-scroll-list-wrap"
-                  :options="{ scrollBar: true }"
-                  :scroll-events="scrollEvents"
-                  @scroll-end="scrollEndListen($event, asset.name)">
-                  <ul class="d-flex text-nowrap NFTs-assets-ul">
-                    <li
-                      v-for="(item, index) of asset.list" :key="index"
-                      class="d-iflex flex-col align-center NFTs-assets-item">
-                      <span
-                        class="i-block NFTs-asset-poster"
-                        :class="{ 'cryptokitties': item.name === 'CryptoKitties' }"
-                        >
-                        <img v-lazy="resizeImage(item.poster)" @load.once="loadedTest"/>
-                      </span>
-                      <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
-                    </li>
-                  </ul>
-                </cube-scroll>
-              </div>
-            </li>
-          </ul>
-          <button v-if="NFTDatas.NFTsTotal > NFTAssets.length" class="breakdown-btn" @click.stop="NFTsPopup = true">View more NFTs</button>
-        </div>
-      <!-- </div>
-    </transition> -->
-    <!-- <transition name="sir-hide-fade">
-      <div v-if="!loading">
-        <h2 class="sir-title-block">Breakdown</h2>
-        <div class="d-flex sir-section-toolbar break-toolbar">
-          <p>
-            ETH & ERC20 ({{ erc20Datas.total }})
-          </p>
-          <p v-if="erc20Datas.total > erc20Ps && !download" class="v-flex d-flex align-center justify-end text-right" @click.stop="erc20Pupup = true">
-            <span class="line-height-0">
-              <svg>
-                <use xlink:href="#icon-menu"/>
-              </svg>
-            </span>
-            <span>More</span>
-          </p>
-        </div>
-        <p class="TTFontMedium break-holding">Holding <span>$ {{ erc20Assets.totalValue | formatDecimal }}</span></p>
-        <div class="break-progress-bar">
-          <p class="d-flex align-center progress-bar-bg">
-            <span
-              v-for="(percent, index) of pecentages"
-              :key="index"
-              :style="`width: ${percent}%;`"></span>
-          </p>
-        </div>
-        <div>
-          <ul v-show="download" class="d-flex flex-row f-wrap justify-start download-erc20-assets text-center">
-            <li class="d-iflex flex-col auto-center download-erc20-item" v-for="(erc20, index) of erc20Datas.list.slice(0, 15)" :key="index">
-              <span class="i-block erc20-assets-logo download">
-                <img :src="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`" crossOrigin="anonymous" @load.once="onImgLoad" @error.once="onImgError"/>
-              </span>
-              <span class="i-block TTFontMedium download-erc20-symbol">{{ erc20.symbol | sliceStr({ end: 4 }) }}{{ erc20.symbol.length > 4 ? '..' : '' }}</span>
-            </li>
-          </ul>
-          <ul v-show="!download" class="break-erc20-assets text-center">
-            <li
-              v-for="erc20 of erc20Assets.list"
-              :key="erc20.symbol"
-              class="d-flex align-center text-center erc20-assets-item">
-              <p class="v-flex d-flex align-center text-left erc20-assets-name">
-                <span class="i-block erc20-assets-logo margin" v-lazy:background-image="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`">
-                </span>
-                <span>{{ erc20.symbol }}</span>
-              </p>
-              <p class="TTFontMedium text-left erc20-assets-value">$ {{ erc20.value | formatNumber }}</p>
-              <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
-            </li>
-          </ul>
-        </div>
-
-        <div v-show="download" class="download-NFTs-assets">
-          <p>NFTs</p>
-          <ul class="TTFontMedium text-center">
-            <li class="auto-center download-NFTs-item" v-for="(NFTs, index) of NFTAssets" :key="index">
-              <ul>
-                <li
-                  v-for="(item, index) of NFTs.list.slice(0, 4)" :key="index"
-                  class="d-iflex flex-col align-center NFTs-assets-item">
-                  <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.name === 'CryptoKitties' }">
-                    <img :src="item.poster" @load.once="onImgLoad" @error.once="onImgError"/>
-                  </span>
-                  <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-        <div v-show="!download" class="break-NFTs-assets">
-          <ul>
-            <li v-for="(asset, index) of NFTAssets" :key="index">
-              <p class="d-flex break-toolbar NFTs-toolbar">
-                {{ asset.name }} ({{ asset.total }})
-              </p>
-              <div :ref="`scroll-box-${asset.name}`" class="relative">
-                <span
-                  class="scroll-list-symbol left"
-                  :class="{ 'show': scrollBar.left[asset.name] }"
-                  @click.stop="scrollHandle(asset.name, 'left')"></span>
-                <span
-                  class="scroll-list-symbol right"
-                  :class="{ 'show': !scrollBar.right[asset.name] && asset.list.length > 4 }"
-                  @click.stop="scrollHandle(asset.name, 'right')"></span>
-                <cube-scroll
-                  :ref="`${asset.name}_scroll`"
-                  :data="asset.list"
-                  direction="horizontal"
-                  class="horizontal-scroll-list-wrap"
-                  :options="{ scrollBar: true }"
-                  :scroll-events="scrollEvents"
-                  @scroll-end="scrollEndListen($event, asset.name)">
-                  <ul class="d-flex text-nowrap NFTs-assets-ul">
-                    <li
-                      v-for="(item, index) of asset.list" :key="index"
-                      class="d-iflex flex-col align-center NFTs-assets-item">
-                      <span
-                        class="i-block NFTs-asset-poster"
-                        :class="{ 'cryptokitties': item.name === 'CryptoKitties' }"
-                        >
-                        <img v-lazy="item.poster" @load.once="loadedTest"/>
-                      </span>
-                      <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
-                    </li>
-                  </ul>
-                </cube-scroll>
-              </div>
-            </li>
-          </ul>
-          <button v-if="NFTDatas.NFTsTotal > NFTAssets.length" class="breakdown-btn" @click.stop="NFTsPopup = true">View more NFTs</button>
-        </div>
-      </div>
-    </transition> -->
+        </li>
+      </ul>
+      <button v-if="NFTDatas.NFTsTotal > NFTAssets.length" class="breakdown-btn" @click.stop="NFTsPopup = true">View more NFTs</button>
+    </div>
     <sir-popup
       :visible.sync="erc20Pupup"
       :list="erc20Datas.list"
@@ -409,7 +279,7 @@ export default {
 
       const __NFTAssets = JSON.parse(JSON.stringify(_NFTAssets.slice(0, 3)))
       const _downloadNFTs = []
-      while (_downloadNFTs.length < 11 && __NFTAssets.length) {
+      while (_downloadNFTs.length < 4 && __NFTAssets.length) {
         for (let i = 0; i < __NFTAssets.length; i++) {
           if (i > 2) {
             break
@@ -623,13 +493,33 @@ export default {
     h2 {
       font-size: 24px;
     }
-
+    &.download {
+      padding-top: 0;
+      padding-bottom: 0;
+      .download-hide {
+        display: none;
+      }
+      .sir-section-toolbar {
+        margin-top: 0;
+      }
+    }
+    &:not(.download) {
+      .download-show {
+        display: none;
+      }
+    }
   }
+  .download-assets-total {
+    font-size: 14px;
+    font-family: $--font-TTNormsMedium;
+    color: #BDB9FD;
+  }
+
   .break-toolbar {
     margin-top: 30px;
   }
   .break-holding {
-    margin-top: 18px;
+    margin-top: 15px;
     font-size: 14px;
     color: #bbb;
     >span {
@@ -875,10 +765,12 @@ export default {
     &.cryptokitties {
       background-size: 120%;
       background-position-x: 80%;
+      >img {
+        width: 125%;
+      }
     }
     >img {
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
     }
   }
   .NFTs-asset-tokenId {
@@ -962,7 +854,7 @@ export default {
 
   // download-NFTs-assets
   .download-NFTs-assets {
-    margin-top: 42px;
+    margin-top: 24px;
     margin-bottom: 20px;
     >p {
       font-size: 16px;

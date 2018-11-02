@@ -1,12 +1,17 @@
 <template>
-  <header data-html2canvas-ignore id="sir-main-header" class="TTFontBold sir-header">
+  <header data-html2canvas-ignore id="sir-main-header" class="TTFontBold sir-header" :class="{ 'is-hide': hide }">
     <div class="container" :class="{ 'search': searchModel }">
-      <div class="d-flex col-flex blocklens-header-cnt">
-        <p class="v-flex" @click.stop="$router.push('/')">
-          Mr.0x
+      <div class="d-flex col-flex lens-header-cnt">
+        <p class="TTFontBlack v-flex d-flex align-center text-uppper lens-header-logo" @click.stop="$router.push('/')">
+          <svg class="image-logo">
+            <use xlink:href="#blocklens-gradient-logo"/>
+          </svg>
+          <svg class="text-logo">
+            <use xlink:href="#blocklens-text-logo"/>
+          </svg>
         </p>
         <p v-if="showTool" class="d-flex flex-row align-start header-icons">
-          <span class="i-block line-height-0" @click.stop="$emit('download')">
+          <span v-if="!loading" class="i-block line-height-0" @click.stop="$emit('download')">
             <svg>
               <use xlink:href="#icon-download"/>
             </svg>
@@ -29,9 +34,9 @@
         </p>
       </div>
       <transition name="sir-detail-fade" @after-enter="searchAfterEnter">
-        <div v-if="searchModel" class="blocklens-header-search">
+        <div v-if="searchModel" class="lens-header-search">
           <div class="d-flex flex-row">
-            <input ref="header-search-input" v-model="searchInput" class="TTFontMedium v-flex blocklens-search-input" type="text" placeholder="Enter Ethereum address"/>
+            <input ref="header-search-input" v-model="searchInput" class="TTFontMedium v-flex lens-search-input" type="text" placeholder="Enter Ethereum address"/>
             <span class="d-iflex auto-center text-center search-input-icon" @click.stop="search({ _id: searchModel })">
               <svg>
                 <use xlink:href="#icon-search"/>
@@ -70,8 +75,10 @@
 import SirSearch from '@/components/utils/Search'
 
 import { addClass, removeClass } from 'utils'
+import SearchMixin from '@/mixins/search'
 export default {
   name: 'sir-header',
+  mixins: [SearchMixin],
   props: {
     showTool: {
       type: Boolean,
@@ -80,10 +87,19 @@ export default {
     appendToBody: {
       type: Boolean,
       default: true
+    },
+    loading: {
+      type: Boolean,
+      default: true
+    },
+    hide: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => {
     return {
+      inputErrorTxt: '',
       searchInput: '',
       maskModel: false,
       searchModel: false
@@ -91,9 +107,18 @@ export default {
   },
   computed: {
     recentSearches () {
-      const localData = localStorage.getItem('blocklens_searches')
+      const localData = localStorage.getItem('lens_searches')
+      console.log('localData', localData)
       if (!localData) return []
       return JSON.parse(localData)
+    }
+  },
+  watch: {
+    searchInput (val) {
+      if (val) {
+        const bool = this.checkInput(val)
+        if (!bool) this.inputErrorTxt = 'Enter the correct Ethereum address.'
+      } else this.inputErrorTxt = null
     }
   },
   components: {
@@ -173,6 +198,25 @@ export default {
         background-color: #151618;
       }
     }
+    &.is-hide {
+      .container {
+        transform: translateY(-100%);
+      }
+    }
+  }
+  .lens-header-logo {
+    >svg {
+      &.image-logo {
+        width: 24px;
+        height: 24px;
+      }
+      &.text-logo {
+        margin-left: 8px;
+        width: 90px;
+        height: 16px;
+        fill: #BDB9FD;
+      }
+    }
   }
   .header-icons {
     >span {
@@ -203,10 +247,10 @@ export default {
     transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
     >svg {
       margin-bottom: 5px;
-      &[data-type='arrow'] {
-        stroke-width: 2px;
-        stroke: #BDB9FD;
-      }
+      // &[data-type='arrow'] {
+      //   stroke-width: 2px;
+      //   stroke: #BDB9FD;
+      // }
     }
     &.search {
       top: 0;
@@ -216,12 +260,12 @@ export default {
     }
   }
 
-  // blocklens-header-search
+  // lens-header-search
 
-  .blocklens-header-search {
+  .lens-header-search {
     margin-top: 25px;
   }
-  .blocklens-search-input {
+  .lens-search-input {
     padding-right: 30px;
     padding-left: 3px;
     height: 20px;
