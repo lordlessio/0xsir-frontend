@@ -5,6 +5,7 @@ const files = [
   'components/svg',
   'components/stories/Blockies.vue',
   'components/stories/popup',
+  'components/stories/popup/tool/Mask',
   'components/stories/collapse',
   'components/stories/collapse/item',
 

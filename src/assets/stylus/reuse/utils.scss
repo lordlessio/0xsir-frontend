@@ -63,7 +63,7 @@
 
 .sir-hide-in-fade-enter-active {
   opacity: 1;
-  transition: opacity .4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity .15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .sir-hide-in-fade-leave-active {
   opacity: 0;
@@ -80,6 +80,14 @@
 .sir-skeleton-fade-enter, .sir-skeleton-fade-leave-to {
   position: absolute;
   width: 100%;
+  opacity: 0;
+}
+
+.sir-detail-fade-enter-active, .sir-detail-fade-leave-active {
+  opacity: 1;
+  transition: opacity .4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sir-detail-fade-enter, .sir-detail-fade-leave-to {
   opacity: 0;
 }
 

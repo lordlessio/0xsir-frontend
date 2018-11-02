@@ -1,18 +1,10 @@
 <template>
-  <section v-if="loading || (!loading && txs.length)" class="TTFontBold relative sir-transactions">
-    <transition name="sir-hide-fade" mode="out-in">
-      <div v-if="loading" key="txs-skeleton" class="sir-txs-skeleton">
+  <section v-if="txs.length" class="TTFontBold relative sir-transactions">
+    <!-- <transition name="sir-hide-fade" mode="out-in"> -->
+      <!-- <div v-if="loading" key="txs-skeleton" class="sir-txs-skeleton">
         <div class="txs-skeleton-container skeleton-animate">
           <h2></h2>
           <p></p>
-          <!-- <ul class="d-flex flex-col txs-skeleton-senders">
-            <li v-for="p of [1,2]" :key="p" class="skeleton-senders-item">
-              <p></p>
-              <div class="d-flex flex-row f-wrap">
-                <span v-for="c of [1,2,3,4]" :key="c" class="i-block"></span>
-              </div>
-            </li>
-          </ul> -->
           <ul class="txs-skeleton-recents">
             <li class="d-flex align-start recent-skeleton-item" v-for="item of [1,2,3]" :key="item">
               <span class="i-block">
@@ -28,8 +20,8 @@
             </li>
           </ul>
         </div>
-      </div>
-      <div v-else key="txs-content">
+      </div> -->
+      <!-- <div v-else key="txs-content"> -->
         <h2 class="sir-title-block">Transactions</h2>
         <div v-if="txAssets.length" ref="sir-txs" class="TTFontBold relative recent-txs">
           <div class="d-flex sir-section-toolbar recent-toolbar">
@@ -50,22 +42,22 @@
               class="relative d-flex justify-start recent-txs-item"
               v-for="(tx, index) of txAssets" :key="index">
               <span class="i-block recent-symbol-poster">
-                <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}.png`"/>
+                <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`"/>
               </span>
               <div class="v-flex TTFontMedium recent-item-cnt">
-                <p class="TTFontBold name">
+                <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.fromName })">
                   <span v-if="tx.fromName">{{ tx.fromName }}</span>
                   <span v-else>{{ tx.from | sliceStr }}...</span>
                 </p>
                 <p class="symbol">#{{ tx.tokenSymbol }}</p>
-                <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat }}</p>
+                <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat('MMM. DD YYYY hh:mm:ss') }}</p>
               </div>
               <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth(tx.decimals) | formatNumber }}</p>
             </li>
           </ul>
         </div>
-      </div>
-    </transition>
+      <!-- </div> -->
+    <!-- </transition> -->
     <!-- <transition name="sir-hide-fade">
       <div v-if="!loading">
         <h2 class="sir-title-block">Transactions</h2>
@@ -115,15 +107,15 @@
         :style="`transition-delay: ${(index + 1) * 0.05}s;`"
         v-for="(tx, index) of txs" :key="index">
         <span class="i-block recent-symbol-poster">
-          <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}.png`"/>
+          <img :data-contract="tx.contract" :src="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`" @error="errorHandle"/>
         </span>
         <div class="v-flex TTFontMedium recent-item-cnt">
-          <p class="TTFontBold name">
+          <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.fromName })">
             <span v-if="tx.fromName">{{ tx.fromName }}</span>
             <span v-else>{{ tx.from | sliceStr }}...</span>
           </p>
           <p class="symbol">#{{ tx.tokenSymbol }}</p>
-          <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat }}</p>
+          <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat('MMM. DD YYYY hh:mm:ss') }}</p>
         </div>
         <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth(tx.decimals) | formatNumber }}</p>
       </li>
@@ -133,8 +125,9 @@
 
 <script>
 // import { addClass, removeClass, toggleClass } from 'utils'
+import { repushImg } from 'api'
 export default {
-  name: 'Transactions',
+  name: 'BlockTransactions',
   props: {
     loading: {
       type: Boolean,
@@ -147,21 +140,26 @@ export default {
   },
   data: () => {
     return {
-      txAssets: [],
       assetsPs: 5,
       popupModel: false
     }
   },
-  watch: {
-    txs (list) {
-      if (list) {
-        this.txAssets = list.slice(0, this.assetsPs)
-      }
+  computed: {
+    txAssets () {
+      return this.txs.slice(0, this.assetsPs)
     }
   },
   methods: {
     getMoreTx () {
       this.popupModel = true
+    },
+    async errorHandle (e) {
+      const _target = e.target
+      const contract = e.target.getAttribute('data-contract')
+      const res = await repushImg(contract)
+      if (res.code === 1000 && res.data) {
+        _target.src = res.data
+      }
     }
   }
 }

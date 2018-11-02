@@ -1,6 +1,6 @@
 <template>
   <section class="TTFontBold relative sir-breakdown">
-    <transition name="sir-hide-fade" mode="out-in">
+    <!-- <transition name="sir-hide-fade" mode="out-in">
       <div v-if="loading" key="breakdown-skeleton" class="sir-breakdown-skeleton">
         <div class="skeleton-animate">
           <h2></h2>
@@ -16,22 +16,9 @@
               <li></li>
             </ul>
           </div>
-          <!-- <div class="NFTs-skeleton-container">
-            <ul>
-              <li v-for="p of [1]" :key="p" class="NFTs-skeleton-item">
-                <p></p>
-                <span class="i-block text-center" v-for="c of [1,2,3]" :key="`${p}_${c}`">
-                  <svg>
-                    <use xlink:href="#icon-alien"/>
-                  </svg>
-                  <span class="i-block"></span>
-                </span>
-              </li>
-            </ul>
-          </div> -->
         </div>
-      </div>
-      <div v-else key="breakdown-content">
+      </div> -->
+      <!-- <div v-else key="breakdown-content"> -->
         <h2 class="sir-title-block">Breakdown</h2>
         <div class="d-flex sir-section-toolbar break-toolbar">
           <p>
@@ -148,8 +135,8 @@
           </ul>
           <button v-if="NFTDatas.NFTsTotal > NFTAssets.length" class="breakdown-btn" @click.stop="NFTsPopup = true">View more NFTs</button>
         </div>
-      </div>
-    </transition>
+      <!-- </div>
+    </transition> -->
     <!-- <transition name="sir-hide-fade">
       <div v-if="!loading">
         <h2 class="sir-title-block">Breakdown</h2>
@@ -273,7 +260,7 @@
         :style="`transition-delay: ${index * 0.05}s;`"
         class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
         <p class="v-flex d-flex align-center text-left erc20-assets-name">
-          <span class="i-block erc20-assets-logo popup-erc20-assets-logo" v-lazy:background-image="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`">
+          <span class="i-block erc20-assets-logo popup-erc20-assets-logo" :style="`background-image: url(${ossOrigin}/0xsir/source/erc20/${erc20.contract})`">
             <!-- <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
           </span>
           <span class="d-flex flex-col">
@@ -368,19 +355,19 @@ export default {
     return {
 
       // NFTs 列表数据
-      NFTAssets: [],
+      // NFTAssets: [],
       // NFTs 每页显示
       NFTsPs: 3,
 
       erc20Ps: 6,
 
       // Erc20 数据
-      erc20Assets: {
-        eth: {},
-        list: []
-      },
+      // erc20Assets: {
+      //   eth: {},
+      //   list: []
+      // },
 
-      downloadNFTs: [],
+      // downloadNFTs: [],
 
       scrollEvents: ['scroll-end'],
       scrollBar: {
@@ -402,18 +389,58 @@ export default {
     },
     ossOrigin () {
       return process.env.OSS_ORIGIN
+    },
+    erc20Assets () {
+      const _erc20Datas = JSON.parse(JSON.stringify(this.erc20Datas))
+      return Object.assign({}, _erc20Datas, {
+        list: _erc20Datas.list.slice(0, this.erc20Ps)
+      })
+    },
+    NFTAssets () {
+      const _NFTs = JSON.parse(JSON.stringify(this.NFTDatas.NFTs))
+      console.log('_NFTs', _NFTs)
+      const _NFTAssets = Object.values(_NFTs || {})
+      return _NFTAssets.slice(0, this.NFTsPs)
+    },
+    downloadNFTs () {
+      const _NFTs = JSON.parse(JSON.stringify(this.NFTDatas.NFTs))
+      console.log('_NFTs', _NFTs)
+      const _NFTAssets = Object.values(_NFTs || {})
+
+      const __NFTAssets = JSON.parse(JSON.stringify(_NFTAssets.slice(0, 3)))
+      const _downloadNFTs = []
+      while (_downloadNFTs.length < 11 && __NFTAssets.length) {
+        for (let i = 0; i < __NFTAssets.length; i++) {
+          if (i > 2) {
+            break
+          }
+          if (!__NFTAssets[i].list.length) {
+            __NFTAssets.splice(i, 1)
+            continue
+          }
+          for (let j = 0; j < __NFTAssets[i].list.length; j++) {
+            if (j > 3) {
+              break
+            }
+            _downloadNFTs.push(__NFTAssets[i].list[j])
+            __NFTAssets[i].list.splice(j, 1)
+          }
+        }
+      }
+      return _downloadNFTs.sort(item => item.assets.contract)
     }
+
   },
   watch: {
     NFTDatas (val) {
       console.log('-NFTDatas', val)
       if (val) this.initNFTDatas(val)
     },
-    erc20Datas (val) {
-      this.$nextTick(() => {
-        if (val) this.initErc20(val)
-      })
-    },
+    // erc20Datas (val) {
+    //   this.$nextTick(() => {
+    //     if (val) this.initErc20(val)
+    //   })
+    // },
 
     // 监听 download 参数, 在需要 download 的时候，将页面中所有图片资源统一加载为 base64
     download (val) {

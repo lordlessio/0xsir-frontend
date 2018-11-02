@@ -29,7 +29,7 @@ export default {
     },
     scale: {
       type: Number,
-      default: 7
+      default: 8
     },
     theme: {
       type: String,

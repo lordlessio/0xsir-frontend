@@ -8,7 +8,9 @@
 
 <script>
 import Search from '@/components/Search.vue'
+import SearchMixin from '@/mixins/search'
 export default {
+  mixins: [SearchMixin],
   data: () => {
     return {
       searchModel: false
@@ -18,9 +20,10 @@ export default {
     Search
   },
   methods: {
-    searchHandle (value) {
-      console.log('value', value)
-      this.$router.push(`/address/${value}`)
+    searchHandle ({ _id, name }) {
+      if (!this.checkInput(_id)) return
+      this.setBlockSearch({ _id, name })
+      this.$router.push(`/address/${_id}`)
     }
   },
   mounted () {

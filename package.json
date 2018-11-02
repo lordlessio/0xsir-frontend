@@ -19,6 +19,8 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cube-ui": "^1.10.16",
+    "d3": "^5.7.0",
+    "d3-cloud": "^1.2.5",
     "date-fns": "^1.29.0",
     "ethereum-blockies": "^0.1.1",
     "file-saver": "^2.0.0-rc.4",
