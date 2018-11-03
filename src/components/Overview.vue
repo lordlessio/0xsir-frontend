@@ -64,7 +64,7 @@
       <ul class="overview-tx-ul overview-tx-timeline" :class="{ 'order-2': download }">
         <li v-if="download" class="d-flex flex-row align-center">
           <p>Holding value</p>
-          <p class="v-flex text-right overview-text">$ {{ erc20Datas.totalValue | formatNumber }}</p>
+          <p class="v-flex text-right overview-text">$ {{ erc20Datas.totalValue | formatDecimal }}</p>
         </li>
         <li class="d-flex flex-row align-center">
           <p>Birthday</p>
@@ -77,14 +77,6 @@
         <li class="d-flex flex-row align-center">
           <p>Transactions</p>
           <p class="v-flex text-right overview-text">{{ erc20Datas.eth.txns | formatNumber }}</p>
-        </li>
-        <li v-if="download" class="d-flex flex-row align-center">
-          <p>NFTS</p>
-          <p class="v-flex text-right overview-text">{{ NFTDatas.total | formatNumber }}</p>
-        </li>
-        <li v-if="download" class="d-flex flex-row align-center">
-          <p>Erc20</p>
-          <p class="v-flex text-right overview-text">{{ erc20Datas.total | formatNumber }}</p>
         </li>
       </ul>
       <div v-if="words.length" class="overview-address-cloud">
