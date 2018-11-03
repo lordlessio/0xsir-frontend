@@ -133,10 +133,6 @@ export default {
       type: Object,
       default: () => {}
     },
-    NFTDatas: {
-      type: Object,
-      default: () => {}
-    },
     download: {
       type: Boolean,
       default: false
@@ -267,7 +263,9 @@ export default {
   },
   mounted () {
     this.$nextTick(() => {
-      this.drawCloud()
+      setTimeout(() => {
+        this.drawCloud()
+      }, 0)
     })
   }
 }
@@ -463,6 +461,7 @@ export default {
     margin: 0 auto;
     width: 900px;
     height: 600px;
+    // font-family: BlocklensImpact;
     z-index: 1;
     // background-color: #7D72F0;
     // box-shadow: 0 0 20px 3px #7D72F0;
@@ -477,6 +476,10 @@ export default {
       transform: scale(.33);
       transform-origin: 0 0;
     }
+    // &::before {
+    //   content: '';
+    //   font-family: BlocklensImpact;
+    // }
   }
   .overview-cloud-point {
     margin-top: 12px;

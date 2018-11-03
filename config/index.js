@@ -29,7 +29,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/lordless': {
-        target: 'http://10.229.5.223:7001',
+        target: 'http://blocklens.io',
         // target: 'http://0x.lordless.io',
         changeOrigin: true,
         pathRewrite: {'^/lordless': ''}
