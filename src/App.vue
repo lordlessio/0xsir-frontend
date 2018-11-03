@@ -21,6 +21,5 @@ export default {
   background-color: #151618;
   @include overflow();
   // overflow: auto;
-  margin-top: 60px;
 }
 </style>
