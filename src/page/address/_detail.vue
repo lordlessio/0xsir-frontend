@@ -187,7 +187,6 @@ export default {
     async drawImage () {
       setTimeout(() => {
         Html2Canvas(document.getElementById('sir-main'), {
-          allowTaint: true,
           useCORS: true,
           scale: window.devicePixelRatio + 1
         }).then((canvas) => {
