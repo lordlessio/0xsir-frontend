@@ -26,8 +26,8 @@ export default {
     this.$nextTick(() => {
       return new QRCode(document.getElementById('qrcode'), {
         text: location.href,
-        width: 360,
-        height: 360,
+        width: 348,
+        height: 348,
         colorDark: '#7D72F0',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
@@ -58,7 +58,7 @@ export default {
     line-height: 1.2;
   }
   .share-qr {
-    padding: 8px;
+    padding: 10px;
     width: 136px;
     height: 136px;
     background-color: #fff;

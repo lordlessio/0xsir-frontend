@@ -127,7 +127,7 @@ export default {
     },
     rewriteGroups (list) {
       const data = {}
-      const groups = [ 'Bitfinex', 'Binance', 'Fomo3D', 'BigONE', 'GU', 'Gate.io', 'Huobi', 'FCoin', 'Coindelta', 'DDEX', 'TheOcean', 'IDEX' ]
+      const groups = [ 'Binance', 'Bitfinex', 'Fomo3D', 'BigONE', 'GU', 'Gate.io', 'Huobi', 'FCoin', 'Coindelta', 'DDEX', 'TheOcean', 'IDEX' ]
       for (const group of groups) {
         for (const item of list) {
           if (item.group === group) {
