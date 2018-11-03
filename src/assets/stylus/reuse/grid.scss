@@ -161,6 +161,9 @@
 .overflow {
   @include overflow();
 }
+.color-555 {
+  color: #555;
+}
 
 .TTFontMedium {
   font-family: $--font-TTNormsMedium;

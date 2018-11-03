@@ -1,14 +1,14 @@
 <template>
   <footer class="sir-footer">
     <p class="footer-markline"></p>
-    <h2>SUBSCRIBE TO OUR NEWSLETTER</h2>
+    <!-- <h2>SUBSCRIBE TO OUR NEWSLETTER</h2>
     <p class="footer-desc">The latest Mr.0x news, articles, and resources, sent straight to your inbox every month.</p>
     <a href="http://eepurl.com/dsLYcr" target="_blank" class="d-flex footer-subscribe-eamil">
       <p class="v-flex footer-subscribe-input">
         <input aria-label="subscribe email" disabled type="text" placeholder="Your email"/>
       </p>
       <span class="TTFontBold i-block">Subscribe</span>
-    </a>
+    </a> -->
     <div class="footer-links">
       <p>Links</p>
       <ul>
@@ -37,7 +37,7 @@
         </li>
       </ul>
     </div>
-    <p class="footer-copyright">© 2018 Mr.0x</p>
+    <p class="footer-copyright">© 2018 BLOCKLENS<br><span class="i-block">Powered by blocklens.io</span></p>
   </footer>
 </template>
 
@@ -141,5 +141,8 @@ export default {
   .footer-copyright {
     margin-top: 40px;
     font-size: 14px;
+    >span {
+      margin-top: 8px;
+    }
   }
 </style>

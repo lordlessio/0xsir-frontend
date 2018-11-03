@@ -36,6 +36,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
+      '~': config.build.assetsPublicPath,
       '@': resolve('src'),
       'stylus': resolve('src/assets/stylus'),
       'api': resolve('src/api'),

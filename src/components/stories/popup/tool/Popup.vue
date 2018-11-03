@@ -6,7 +6,7 @@
       v-if="visible"
       ref="slide"
       class="TTFontBold sir-dialog-slide"
-      :style="`height: ${height}px;`"
+      :style="`height: 70%;`"
       @click.stop>
       <div v-if="rendered" class="d-flex flex-col container sir-slide-container">
         <p v-if="title" class="sir-popup-title">{{ title }}</p>
@@ -40,10 +40,6 @@ export default {
       default: false
     },
     title: String,
-    height: {
-      type: Number,
-      default: 450
-    },
     appendToBody: {
       type: Boolean,
       default: true

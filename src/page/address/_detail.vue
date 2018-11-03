@@ -146,7 +146,7 @@ export default {
 
   watch: {
     loadingDone (val) {
-      if (val) document.documentElement.scrollTop = 0
+      if (val) document.getElementById('app').scrollTop = 0
     }
   },
   components: {
@@ -162,27 +162,27 @@ export default {
 
   methods: {
     toTop () {
-      document.documentElement.scrollTop = 0
+      document.getElementById('app').scrollTop = 0
     },
 
     search ({ _id, name }) {
       if (!this.checkInput(_id)) return
-      document.documentElement.scrollTop = 0
+      document.getElementById('app').scrollTop = 0
       this.address = _id
       this.init({ address: _id })
       this.setBlockSearch({ _id, name })
       window.history.pushState(null, null, `/address/${_id}`)
     },
 
-    saveFile (data, filename) {
-      const saveLink = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')
-      saveLink.href = data
-      saveLink.download = filename
+    // saveFile (data, filename) {
+    //   const saveLink = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')
+    //   saveLink.href = data
+    //   saveLink.download = filename
 
-      const event = document.createEvent('MouseEvents')
-      event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-      saveLink.dispatchEvent(event)
-    },
+    //   const event = document.createEvent('MouseEvents')
+    //   event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+    //   saveLink.dispatchEvent(event)
+    // },
 
     async drawImage () {
       setTimeout(() => {
@@ -192,7 +192,7 @@ export default {
           scale: window.devicePixelRatio + 1
         }).then((canvas) => {
           const img = document.createElement('img')
-          img.className = 'sir-download-img full-width'
+          img.className = 'lens-download-img full-width'
           img.src = canvas.toDataURL('image/png', 1)
           this.downloadLoaded = true
           // console.log('canvas', canvas, canvas.toDataURL())
@@ -219,79 +219,95 @@ export default {
 
     async getInfoById ({ address = this.address } = {}) {
       this.overviewLoading = true
-      let res
-      try {
-        res = await getInfoById(address) || {}
-        if (res.code === 1000) {
-          this.overviewDatas = res.data || this.overviewDatas
-        }
-        this.overviewLoading = false
-        console.log('overviewLoading', this.overviewLoading, res.data)
-      } catch (err) {
-        this.overviewLoading = false
+      let data = {
+        info: {},
+        txTimeline: {}
       }
+      try {
+        const res = await getInfoById(address) || {}
+        if (res.code === 1000 && res.data) {
+          data = res.data
+        }
+      } catch (err) {
+        console.warn('overview error', err)
+      }
+      this.overviewDatas = data
+      this.overviewLoading = false
     },
 
     async getNFTs ({ address = this.address } = {}) {
       this.NFTsLoading = true
-      let res
-      try {
-        res = await getNFTs({ address }) || {}
-        if (res.code === 1000 && res.data) {
-          this.NFTDatas = res.data
-        }
-        this.NFTsLoading = false
-      } catch (err) {
-        this.NFTsLoading = false
+      let data = {
+        NFTs: []
       }
+      try {
+        const res = await getNFTs({ address }) || {}
+        if (res.code === 1000 && res.data) {
+          data = res.data
+        }
+      } catch (err) {
+        console.warn('nfts error', err)
+      }
+      this.NFTDatas = data
+      this.NFTsLoading = false
     },
     async getErc20 ({ address = this.address } = {}) {
       this.erc20Loading = true
-      let res
-      try {
-        res = await getErc20({ address }) || {}
-        if (res.code === 1000 && res.data) {
-          this.erc20Datas = res.data
-        }
-        this.erc20Loading = false
-      } catch (err) {
-        this.erc20Loading = false
+      let data = {
+        eth: {},
+        list: []
       }
+      try {
+        const res = await getErc20({ address }) || {}
+        if (res.code === 1000 && res.data) {
+          data = res.data
+        }
+      } catch (err) {
+        console.warn('erc20 error', err)
+      }
+      this.erc20Datas = data
+      this.erc20Loading = false
     },
 
     async getClosests ({ address = this.address }) {
       this.closestLoading = true
+
+      let data = {
+        list: [],
+        words: []
+      }
       try {
         const res = await getClosests({ address })
 
         if (res.code === 1000 && res.data) {
-          this.closestsData = res.data
+          data = res.data
         }
-        this.closestLoading = false
       } catch (err) {
-        this.closestLoading = false
+        console.warn('closests error', err)
       }
+      this.closestsData = data
+      this.closestLoading = false
     },
 
     async initTxDatas ({ address = this.address } = {}) {
       this.txLoading = true
-      try {
-        const txDatas = await this.getTxDatas({ address })
-        this.txLoading = false
-        console.log('txDatas', txDatas)
-        if (!txDatas) return
-        this.txDatas = txDatas
-      } catch (err) {
-        this.txLoading = false
-      }
+      const txDatas = await this.getTxDatas({ address })
+      this.txDatas = txDatas
+      this.txLoading = false
     },
 
     async getTxDatas ({ address = this.address } = {}) {
-      const res = await getTxs({ address }) || {}
-      if (res.code === 1000) {
-        return res.data
+      let data = { list: [] }
+      try {
+        const res = await getTxs({ address }) || {}
+        if (res.code === 1000 && res.data) {
+          data = res.data
+        }
+      } catch (err) {
+        console.warn('txs error', err)
       }
-      return null
+
+      return data
     },
 
     async refreshTxDatas (cb) {
@@ -357,6 +373,7 @@ export default {
     background-repeat: no-repeat;
     @include viewport-unit(min-height, 100vh);
     &.download {
+      min-height: initial;
       width: 375px;
       padding-top: 30px;
       box-sizing: border-box;

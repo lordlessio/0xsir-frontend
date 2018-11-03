@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
-import { proxyImg, formatDecimal, sliceStr, splitAddress, dateFormat, weiToEth, formatNumber, filterSocialIcon, resizeImage } from '@/assets/utils'
+import { cdn2lordlessio, proxyImg, formatDecimal, sliceStr, splitAddress, dateFormat, weiToEth, formatNumber, filterSocialIcon, resizeImage } from '@/assets/utils'
+Vue.filter('cdn2lordlessio', cdn2lordlessio)
 Vue.filter('proxyImg', proxyImg)
 Vue.filter('formatDecimal', formatDecimal)
 Vue.filter('dateFormat', dateFormat)

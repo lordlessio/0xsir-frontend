@@ -23,11 +23,11 @@
         <h2 class="sir-title-block">Closest addresses</h2>
         <table class="closest-table full-width">
           <thead>
-            <th class="d-flex text-center closest-table-th">
-              <td class="closest-name-td">
+            <th class="d-flex closest-table-th">
+              <td class="text-left closest-name-td">
                 <span>Address</span>
               </td>
-              <td class="TTFontMedium v-flex closest-arrow-td">
+              <!-- <td class="TTFontMedium v-flex closest-arrow-td">
                 <span class="i-block i-block closest-arrow down">
                   <svg>
                     <use xlink:href="#icon-arrow-up"/>
@@ -42,9 +42,9 @@
                   </svg>
                 </span>
                 <span>OUT</span>
-              </td>
+              </td> -->
               <td class="v-flex text-right">
-                <span>Total</span>
+                <span>Relevancy</span>
               </td>
             </th>
             <tr><td class="closest-markline-top"></td></tr>
@@ -56,15 +56,20 @@
           <tbody>
             <tr class="d-flex align-center text-center sir-closest-item"
             v-for="(item, index) of closests" :key="index">
-              <td class="text-left closest-name-td">
-                <span class="d-iflex align-center closest-name" @click.stop="$emit('search', item)"><span>{{ index + 1 }}</span> {{ item.name || item._id | sliceStr({ end: item.name ? 8 : 6 }) }}</span>
+              <td class="text-left text-nowrap closest-name-td">
+                <span class="d-iflex align-center closest-name" @click.stop="$emit('search', item)" :data-index="index + 1">
+                  <span v-if="item.name">
+                    <span>{{ item.name }}</span>
+                    <span v-if="item.name.length < 10" class="color-555">({{ item._id | sliceStr({ end: 6 }) }})</span>
+                  </span>
+                  <span v-else>{{ item._id | splitAddress({ brfore: 6, end: 4 }) }}</span></span>
               </td>
-              <td class="v-flex">
+              <!-- <td class="v-flex">
                 <span class="i-block">{{ item.in | formatNumber }}</span>
               </td>
               <td class="v-flex">
                 <span class="i-block">{{ item.out | formatNumber }}</span>
-              </td>
+              </td> -->
               <td class="v-flex text-right">
                 <span class="i-block text-center closest-tx-total">{{ item.count | formatNumber }}</span>
               </td>
@@ -190,11 +195,21 @@ export default {
     }
   }
   .closest-name-td {
-    width: 30%;
+    padding-left: 20px;
+    width: 60%;
+    box-sizing: border-box;
   }
   .closest-name {
-    >span {
-      margin-right: 5px;
+    position: relative;
+    font-size: 18px;
+    // >span {
+    //   margin-right: 5px;
+    //   font-size: 18px;
+    // }
+    &::before {
+      content: attr(data-index);
+      position: absolute;
+      left: -24px;
       font-size: 16px;
     }
   }

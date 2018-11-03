@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @touchmove.prevent>
     <sir-mask-tool
       ref="sirMask"
       :visible="visible"
@@ -15,7 +15,7 @@
         @click.stop>
         <div v-if="rendered" class="d-flex flex-col container lens-slide-container" :class="{ 'loaded': loaded }">
           <div class="v-flex d-flex flex-col lens-popup-cnt index-1">
-            <div class="v-flex relative popup-main-cnt">
+            <div class="v-flex relative popup-main-cnt" @touchmove.stop>
               <div class="download-img-loading">
                 <p class="download-loading-icon"></p>
               </div>
@@ -48,7 +48,7 @@ export default {
     },
     height: {
       type: String,
-      default: '75%'
+      default: '70%'
     },
     loaded: {
       type: Boolean,

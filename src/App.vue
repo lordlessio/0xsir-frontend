@@ -13,16 +13,14 @@ export default {
 
 <style lang="scss" scoped>
 #app {
+  position: relative;
   /* font-family: 'Avenir', Helvetica, Arial, sans-serif; */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: $--font-TTNormsMedium;
   background-color: #151618;
-  // height: 100%;
+  @include overflow();
   // overflow: auto;
-  // -webkit-overflow-scrolling: touch;
-  /* text-align: center;
-  color: #2c3e50;
   margin-top: 60px; */
 }
 </style>
