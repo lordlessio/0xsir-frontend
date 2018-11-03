@@ -45,8 +45,8 @@
                 <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`"/>
               </span>
               <div class="v-flex TTFontMedium recent-item-cnt">
-                <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.fromName })">
-                  <span v-if="tx.fromName">{{ tx.fromName }}</span>
+                <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
+                  <span v-if="tx.nickName">{{ tx.nickName }}</span>
                   <span v-else>{{ tx.from | sliceStr }}...</span>
                 </p>
                 <p class="symbol">#{{ tx.tokenSymbol }}</p>
@@ -110,8 +110,8 @@
           <img :data-contract="tx.contract" :src="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`" @error="errorHandle"/>
         </span>
         <div class="v-flex TTFontMedium recent-item-cnt">
-          <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.fromName })">
-            <span v-if="tx.fromName">{{ tx.fromName }}</span>
+          <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
+            <span v-if="tx.nickName">{{ tx.nickName }}</span>
             <span v-else>{{ tx.from | sliceStr }}...</span>
           </p>
           <p class="symbol">#{{ tx.tokenSymbol }}</p>

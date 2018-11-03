@@ -43,7 +43,7 @@
               </svg>
             </span>
           </div>
-          <div class="recent-searches">
+          <div v-if="recentSearches.length" class="recent-searches">
             <p class="d-flex align-center recent-search-title">
               <span class="i-block line-height-0 recent-search-icon">
                 <svg>
@@ -62,6 +62,9 @@
                 </span>
               </li>
             </ul>
+          </div>
+          <div class="text-center header-search-error" :class="{ 'is-active': inputErrorTxt }">
+            <span class="i-block">{{ inputErrorTxt }}</span>
           </div>
         </div>
       </transition>
@@ -139,14 +142,14 @@ export default {
     }
     let navbarInverse = false
     const func = () => {
-      const scrollTop = document.documentElement.scrollTop || window.pageYOffset || document.body.scrollTop
-      if (!navbarInverse && scrollTop > 62) {
+      const scrollTop = document.getElementById('app').scrollTop
+      if (!navbarInverse && scrollTop > 60) {
         const header = document.getElementById('sir-main-header')
         header.style.opacity = 0
         addClass('fixed', header)
         header.style.opacity = 1
         navbarInverse = true
-      } else if (navbarInverse && scrollTop <= 62) {
+      } else if (navbarInverse && scrollTop <= 60) {
         const header = document.getElementById('sir-main-header')
         header.style.opacity = 0
         removeClass('fixed', header)
@@ -154,10 +157,11 @@ export default {
         navbarInverse = false
       }
     }
-    document.addEventListener('scroll', func)
+    func()
+    document.getElementById('app').addEventListener('scroll', func)
 
     this.$once('hook:beforeDestroy', () => {
-      document.removeEventListener('scroll', func)
+      document.getElementById('app').removeEventListener('scroll', func)
     })
   },
   beforeDestroy () {
@@ -170,7 +174,7 @@ export default {
 
 <style lang="scss" scoped>
   .sir-header {
-    position: fixed;
+    position: absolute;
     top: -1px;
     left: 0;
     width: 100%;
@@ -306,6 +310,27 @@ export default {
       width: 18px;
       height: 18px;
       fill: #BDB9FD;
+    }
+  }
+  .header-search-error {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    font-size: 14px;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .4s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0s;
+    >span {
+      padding: 8px 13px;
+      border-radius: 5px;
+      background-color: #7D72F0;
+      box-shadow: 0 0 30px 0px rgba(125, 114, 240, .75);
+    }
+    &.is-active {
+      opacity: 1;
+      visibility: visible;
     }
   }
 </style>

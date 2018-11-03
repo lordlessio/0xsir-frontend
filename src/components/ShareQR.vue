@@ -10,14 +10,27 @@
           <p>Powered by LORDLESS</p>
         </div>
       </div>
-      <div class="share-qr"></div>
+      <div class="share-qr">
+        <span id="qrcode" class="i-block"></span>
+      </div>
     </div>
   </section>
 </template>
 
 <script>
 export default {
-
+  mounted () {
+    this.$nextTick(() => {
+      return new QRCode(document.getElementById('qrcode'), {
+        text: location.href,
+        width: 80,
+        height: 80,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+      })
+    })
+  }
 }
 </script>
 
@@ -48,6 +61,10 @@ export default {
     background-color: #fff;
     border-radius: 5px;
     box-sizing: border-box;
+    >span {
+      width: 100%;
+      height: 100%;
+    }
   }
   .share-copy-right {
     margin-top: 10px;

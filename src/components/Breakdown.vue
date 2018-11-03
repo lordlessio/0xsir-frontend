@@ -5,7 +5,7 @@
       <p>
         <span>ETH & ERC20 </span>
         <span class="download-hide">({{ erc20Datas.total }})</span>
-        <span class="download-show download-assets-total">(5 of {{ erc20Datas.total }})</span>
+        <span class="download-show download-assets-total">({{ erc20Datas.total > 5 ? 5 : erc20Datas.total }} of {{ erc20Datas.total }})</span>
       </p>
       <p v-if="!download" class="v-flex d-flex align-center justify-end text-right" @click.stop="erc20Pupup = true">
         <span class="line-height-0">
@@ -16,7 +16,7 @@
         <span>More</span>
       </p>
     </div>
-    <p class="download-hide TTFontMedium break-holding">Holding <span>$ {{ erc20Assets.totalValue | formatDecimal }}</span></p>
+    <p class="download-hide TTFontMedium break-holding"><span>$ {{ erc20Assets.totalValue | formatDecimal }}</span>&nbsp;&nbsp;&nbsp;holding</p>
     <div class="download-hide break-progress-bar">
       <p class="d-flex align-center progress-bar-bg">
         <span
@@ -29,30 +29,47 @@
       <ul v-show="download" class="d-flex flex-row f-wrap justify-start download-erc20-assets text-center">
         <li class="d-iflex flex-col auto-center download-erc20-item" v-for="(erc20, index) of erc20Datas.list.slice(0, 5)" :key="index">
           <span class="i-block erc20-assets-logo download">
-            <img :src="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`" crossOrigin="anonymous" @load.once="onImgLoad" @error.once="onImgError"/>
+            <img :src="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)" @load.once="onImgLoad" @error.once="onImgError"/>
           </span>
           <span class="i-block TTFontMedium download-erc20-symbol">{{ erc20.symbol | sliceStr({ end: 4 }) }}{{ erc20.symbol.length > 4 ? '..' : '' }}</span>
         </li>
       </ul>
-      <ul v-show="!download" class="break-erc20-assets text-center">
-        <li
+      <ul v-if="!download" class="break-erc20-assets text-center">
+        <!-- <li
           v-for="(erc20, index) of erc20Assets.list"
           :key="index"
           class="d-flex align-center text-center erc20-assets-item">
           <p class="v-flex d-flex align-center text-left erc20-assets-name">
             <span class="i-block erc20-assets-logo margin" v-lazy:background-image="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)">
-              <!-- <img :src="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
             </span>
             <span>{{ erc20.symbol }}</span>
           </p>
           <p class="TTFontMedium text-left erc20-assets-value">$ {{ erc20.value | formatNumber }}</p>
+          <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
+        </li> -->
+        <li
+          v-for="(erc20, index) of erc20Assets.list"
+          :key="index"
+          class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
+          <p class="v-flex d-flex align-center text-left erc20-assets-name">
+            <span class="i-block erc20-assets-logo popup-erc20-assets-logo" :style="`background-image: url(${ossOrigin}/0xsir/source/erc20/${erc20.contract})`">
+              <!-- <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
+            </span>
+            <span class="d-flex flex-col">
+              <span>
+                <span class="popup-erc20-count">{{ erc20.count | formatDecimal({ len: 2 }) | formatNumber }} {{ erc20.symbol }}</span>
+                <span class="popup-erc20-price"> × ${{ erc20.price || 0 }}</span>
+              </span>
+              <span class="TTFontBold popup-erc20-value">≈ ${{ erc20.value || 0 }}</span>
+            </span>
+          </p>
           <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
         </li>
       </ul>
     </div>
 
     <div v-show="download && NFTDatas.total" class="download-NFTs-assets">
-      <p>NFTs<span class="download-assets-total"> (4 of {{ NFTDatas.total }})</span></p>
+      <p>NFTs<span class="download-assets-total"> ({{ NFTDatas.total > 4 ? 4 : NFTDatas.total }} of {{ NFTDatas.total }})</span></p>
       <ul class="d-flex f-wrap TTFontMedium text-center">
         <li
           v-for="(NFT, index) of downloadNFTs" :key="index"
@@ -76,14 +93,22 @@
         </li> -->
       </ul>
     </div>
-    <div v-show="!download" class="break-NFTs-assets">
+    <div v-if="!download" class="break-NFTs-assets">
       <ul>
         <li v-for="(asset, index) of NFTAssets" :key="index">
           <p class="d-flex break-toolbar NFTs-toolbar">
             {{ asset.name }} ({{ asset.total }})
           </p>
           <div :ref="`scroll-box-${asset.name}`" class="relative">
-            <span
+            <ul class="d-flex text-nowrap NFTs-assets-ul">
+              <li
+                v-for="(item, index) of asset.list.slice(0, 4)" :key="index"
+                class="d-iflex flex-col align-center NFTs-assets-item">
+                <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.name === 'CryptoKitties' }" v-lazy:background-image="item.poster"></span>
+                <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
+              </li>
+            </ul>
+            <!-- <span
               class="scroll-list-symbol left"
               :class="{ 'show': scrollBar.left[asset.name] }"
               @click.stop="scrollHandle(asset.name, 'left')"></span>
@@ -106,13 +131,13 @@
                   <span
                     class="i-block NFTs-asset-poster"
                     :class="{ 'cryptokitties': item.name === 'CryptoKitties' }"
+                    v-lazy:background-image="resizeImage(item.poster)"
                     >
-                    <img v-lazy="resizeImage(item.poster)" @load.once="loadedTest"/>
                   </span>
                   <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
                 </li>
               </ul>
-            </cube-scroll>
+            </cube-scroll> -->
           </div>
         </li>
       </ul>
@@ -277,26 +302,35 @@ export default {
       console.log('_NFTs', _NFTs)
       const _NFTAssets = Object.values(_NFTs || {})
 
-      const __NFTAssets = JSON.parse(JSON.stringify(_NFTAssets.slice(0, 3)))
+      const __NFTAssets = JSON.parse(JSON.stringify(_NFTAssets))
       const _downloadNFTs = []
       while (_downloadNFTs.length < 4 && __NFTAssets.length) {
         for (let i = 0; i < __NFTAssets.length; i++) {
-          if (i > 2) {
-            break
-          }
           if (!__NFTAssets[i].list.length) {
             __NFTAssets.splice(i, 1)
             continue
           }
-          for (let j = 0; j < __NFTAssets[i].list.length; j++) {
-            if (j > 3) {
-              break
-            }
-            _downloadNFTs.push(__NFTAssets[i].list[j])
-            __NFTAssets[i].list.splice(j, 1)
-          }
+          _downloadNFTs.push(__NFTAssets[i].list[0])
+          __NFTAssets[i].list.splice(0, 1)
         }
+        // for (let i = 0; i < __NFTAssets.length; i++) {
+        //   if (i > 2) {
+        //     break
+        //   }
+        //   if (!__NFTAssets[i].list.length) {
+        //     __NFTAssets.splice(i, 1)
+        //     continue
+        //   }
+        //   for (let j = 0; j < __NFTAssets[i].list.length; j++) {
+        //     if (j > 3) {
+        //       break
+        //     }
+        //     _downloadNFTs.push(__NFTAssets[i].list[j])
+        //     __NFTAssets[i].list.splice(j, 1)
+        //   }
+        // }
       }
+      console.log('_downloadNFTs', _downloadNFTs)
       return _downloadNFTs.sort(item => item.assets.contract)
     }
 
@@ -305,42 +339,11 @@ export default {
     NFTDatas (val) {
       console.log('-NFTDatas', val)
       if (val) this.initNFTDatas(val)
-    },
-    // erc20Datas (val) {
-    //   this.$nextTick(() => {
-    //     if (val) this.initErc20(val)
-    //   })
-    // },
-
-    // 监听 download 参数, 在需要 download 的时候，将页面中所有图片资源统一加载为 base64
-    download (val) {
-      // if (val) this.toBase64()
     }
   },
   methods: {
     resizeImage () {
       return resizeImage(...arguments)
-    },
-
-    loadedTest () {
-      console.log('loadedTest')
-    },
-
-    async toBase64 () {
-      const imgs = document.querySelectorAll('img[data-src]')
-      console.time('toBase64')
-      await Promise.all(Array.from(imgs).map(img => {
-        const src = img.getAttribute('data-src')
-        return img2Base64(src).then(str => {
-          img.src = str
-        }).catch(() => {
-          img2Base64(`${this.ossOrigin}/0xsir/source/sir-error-icon.svg`).then(str => {
-            img.src = str
-          })
-        })
-      }))
-      console.timeEnd('toBase64')
-      console.log('imgs', imgs)
     },
 
     onImgLoad (e) {
@@ -482,12 +485,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  $break-color-red: #EB8785;
-  $break-color-purple: #DBABFF;
-  $break-color-green: #69D1C3;
+  $erc20-color-gold: #FF9D15;
+  $erc20-color-purple: #DA5DFF;
+  $erc20-color-blue: #52A1FF;
 
   .sir-breakdown {
-    padding-top: 35px;
+    // padding-top: 35px;
     padding-bottom: 35px;
     color: #fff;
     h2 {
@@ -539,39 +542,39 @@ export default {
       display: inline-block;
       height: 100%;
       &:nth-of-type(1) {
-        background-color: $break-color-red;
+        background-color: $erc20-color-gold;
       }
       &:nth-of-type(2) {
-        background-color: $break-color-purple;
+        background-color: $erc20-color-purple;
       }
       &:nth-of-type(3) {
-        background-color: $break-color-green;
+        background-color: $erc20-color-blue;
       }
     }
   }
 
   .break-erc20-assets {
-    margin-top: 15px;
+    margin-top: 16px;
     font-size: 16px;
   }
 
   .erc20-assets-item {
     margin-bottom: 14px;
-      &:nth-of-type(1) {
-        .erc20-assets-name {
-          color: $break-color-red;
-        }
-      }
-      &:nth-of-type(2) {
-        .erc20-assets-name {
-          color: $break-color-purple;
-        }
-      }
-      &:nth-of-type(3) {
-        .erc20-assets-name {
-          color: $break-color-green;
-        }
-      }
+      // &:nth-of-type(1) {
+      //   .erc20-assets-name {
+      //     color: $erc20-color-gold;
+      //   }
+      // }
+      // &:nth-of-type(2) {
+      //   .erc20-assets-name {
+      //     color: $erc20-color-purple;
+      //   }
+      // }
+      // &:nth-of-type(3) {
+      //   .erc20-assets-name {
+      //     color: $erc20-color-blue;
+      //   }
+      // }
   }
   .erc20-assets-logo {
     width: 30px;
@@ -603,6 +606,8 @@ export default {
   }
   .erc20-assets-percent {
     width: 75px;
+    font-size: 14px;
+    color: #bbb;
   }
 
   .scroll-list-symbol {
@@ -720,7 +725,22 @@ export default {
 
   // popup style
   .popup-erc20-assets-item {
-    margin-bottom: 14px;
+    margin-bottom: 18px;
+    &:nth-of-type(1) {
+      .popup-erc20-count {
+        color: $erc20-color-gold;
+      }
+    }
+    &:nth-of-type(2) {
+      .popup-erc20-count {
+        color: $erc20-color-purple;
+      }
+    }
+    &:nth-of-type(3) {
+      .popup-erc20-count {
+        color: $erc20-color-blue;
+      }
+    }
   }
   .popup-erc20-assets-logo {
     margin-right: 12px;
@@ -728,7 +748,7 @@ export default {
     height: 35px;
   }
   .popup-erc20-count {
-    color: #7D72F0;
+    color: #fff;
   }
   .popup-erc20-price {
     margin-left: 5px;

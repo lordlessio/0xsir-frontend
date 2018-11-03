@@ -113,21 +113,21 @@ export default {
   },
   methods: {
     async getGroups () {
-      const localGroups = localStorage.getItem('0xsir_popular_address')
-      if (localGroups) {
-        this.groups = JSON.parse(localGroups)
-        return
-      }
+      // const localGroups = localStorage.getItem('0xsir_popular_address')
+      // if (localGroups) {
+      //   this.groups = JSON.parse(localGroups)
+      //   return
+      // }
       const res = await getGroups()
       if (res.code === 1000 && res.data) {
         const groups = this.rewriteGroups(res.data)
         this.groups = groups
-        localStorage.setItem('0xsir_popular_address', JSON.stringify(groups))
+        // localStorage.setItem('0xsir_popular_address', JSON.stringify(groups))
       }
     },
     rewriteGroups (list) {
       const data = {}
-      const groups = [ 'Binance', 'Poloniex', 'Fomo3D', 'CryptoKitties', 'GU' ]
+      const groups = [ 'Bitfinex', 'Binance', 'Fomo3D', 'BigONE', 'GU', 'Gate.io', 'Huobi', 'FCoin', 'Coindelta', 'DDEX', 'TheOcean', 'IDEX' ]
       for (const group of groups) {
         for (const item of list) {
           if (item.group === group) {

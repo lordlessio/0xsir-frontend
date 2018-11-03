@@ -4,15 +4,32 @@
 
 const path = require('path')
 
+const { format } = require('date-fns')
+const argv = require('yargs').argv
+let env = require('./prod.env')
+
+const assetsRoot = path.resolve(__dirname, '../dist')
+
+const timeStr = `${format(new Date(), 'YYYY-MM-DD')}_${new Date().getTime()}`
+
+if (argv.env === 'ropsten') {
+  env = require('./ropsten.env')
+}
+
+const devEnv = require('./dev.env')
+
+const ossPublicPath = `blocklens/frontend/${env.OSSFOLDERPATH}/${timeStr}/`
+
 module.exports = {
   dev: {
+    env: devEnv,
 
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
       '/lordless': {
-        target: 'http://localhost:7001',
+        target: 'http://10.229.5.223:7001',
         // target: 'http://0x.lordless.io',
         changeOrigin: true,
         pathRewrite: {'^/lordless': ''}
@@ -51,13 +68,16 @@ module.exports = {
   },
 
   build: {
+    env,
     // Template for index.html
     index: path.resolve(__dirname, '../dist/index.html'),
 
     // Paths
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    assetsRoot,
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsDllDirectory: 'static/dll',
+    ossPublicPath,
+    assetsPublicPath: `//lordless.oss-cn-hongkong.aliyuncs.com/${ossPublicPath}`,
 
     /**
      * Source Maps

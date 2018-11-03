@@ -154,33 +154,33 @@ export const cdn2lordlessio = (url) => {
   return url.replace(match, 'cdn.lordlessio.com')
 }
 
+export const getBase64Image = (img, width, height) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = width || img.width
+  canvas.height = height || img.height
+
+  const ctx = canvas.getContext('2d')
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+  const dataURL = canvas.toDataURL()
+  return dataURL
+}
+
 /**
  * 图片转base64格式
  */
-export const img2Base64 = (url, crossOrigin = 'Anonymous') => {
+export const img2Base64 = (url) => {
+  url = url.split('?')[0]
+  console.log('url', url)
   return new Promise((resolve, reject) => {
-    const img = new Image()
-
-    const c = document.createElement('canvas')
-
-    const cxt = c.getContext('2d')
-
-    img.onload = (e) => {
-      c.width = img.naturalWidth
-      c.height = img.naturalHeight
-
-      cxt.drawImage(img, 0, 0)
-      // console.log('e', e.target)
-      // 得到图片的base64编码数据
-      // document.body.appendChild(c)
-      resolve(c.toDataURL('image/png'))
-    }
-    img.onerror = (err) => {
-      reject(err)
-    }
-
-    crossOrigin && img.setAttribute('crossOrigin', crossOrigin)
+    let img = new Image()
+    img.crossOrigin = ''
     img.src = url
+    img.onload = function () {
+      const width = img.naturalWidth
+      const height = img.naturalHeight
+      const data = getBase64Image(img, width * 2, height * 2)
+      resolve(data)
+    }
   })
 }
 

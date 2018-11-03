@@ -1,7 +1,8 @@
 'use strict'
-module.exports = {
+const merge = require('webpack-merge')
+module.exports = merge({
   NODE_ENV: '"production"',
   BACKEND_SERVER: '""',
-  OSSFOLDERPATH: 'dist',
+  OSSFOLDERPATH: 'ropsten',
   OSS_ORIGIN: '"//lordless.oss-cn-hongkong.aliyuncs.com"'
-}
+})
