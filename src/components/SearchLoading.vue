@@ -3,8 +3,9 @@
     <section class="TTFontBold lens-loading-box">
       <div class="relative index-1">
         <sir-blockies class="overview-blockies" :seed="address"/>
-        <h1 class="text-center">
-          <span class="sir-title-block bottom lg">{{ address | sliceStr({ end: 11 }) }}...</span>
+        <h1 class="text-center" @click.stop="isFullAddress = !isFullAddress">
+          <span v-if="!isFullAddress" class="sir-title-block bottom lg">{{ address | splitAddress({ before: 6, end: 4 }) }}</span>
+            <span v-else class="TTFontMedium i-block text-left sir-full-address">{{ address }}</span>
         </h1>
       </div>
       <div v-if="!error" class="lens-loading-icon">
@@ -35,6 +36,11 @@ export default {
     error: {
       type: Boolean,
       default: false
+    }
+  },
+  data: () => {
+    return {
+      isFullAddress: false
     }
   }
 }

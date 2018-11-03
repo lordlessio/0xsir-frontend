@@ -6,12 +6,14 @@
         <p>Missing assets?</p>
         <p>Scan the QR code<br>for more details</p>
         <div class="TTFontMedium share-copy-right">
-          <p>© 2018 Mr.0x</p>
-          <p>Powered by LORDLESS</p>
+          <p>© 2018 BLOCKLENS</p>
+          <p>Powered by blocklens.io</p>
         </div>
       </div>
       <div class="share-qr">
-        <span id="qrcode" class="i-block"></span>
+        <div class="share-qr-container">
+          <span id="qrcode" class="i-block"></span>
+        </div>
       </div>
     </div>
   </section>
@@ -23,9 +25,9 @@ export default {
     this.$nextTick(() => {
       return new QRCode(document.getElementById('qrcode'), {
         text: location.href,
-        width: 80,
-        height: 80,
-        colorDark: '#000000',
+        width: 360,
+        height: 360,
+        colorDark: '#7D72F0',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
       })
@@ -56,16 +58,30 @@ export default {
   }
   .share-qr {
     padding: 8px;
-    width: 96px;
-    height: 96px;
+    width: 136px;
+    height: 136px;
     background-color: #fff;
     border-radius: 5px;
     box-sizing: border-box;
+    // >span {
+    //   width: 100%;
+    //   height: 100%;
+    // }
+    // img {
+    //   transform: scale(.5);
+    //   transform-origin: 0 0;
+    // }
+  }
+  .share-qr-container {
+    width: 100%;
+    height: 100%;
     >span {
-      width: 100%;
-      height: 100%;
+      transform: scale(.33);
+      transform-origin: 0 0;
     }
   }
+
+
   .share-copy-right {
     margin-top: 10px;
     font-size: 12px;

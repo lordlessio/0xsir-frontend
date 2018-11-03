@@ -1,8 +1,8 @@
 export default {
   methods: {
-    checkInput (value) {
-      const match = /^(0x)([A-Za-z0-9]{40})$/
-      return value.match(match)
+    checkInput (t) {
+      // const match = /^(0x)([A-Za-z0-9]{40})$/
+      return !!/^(0x)?[0-9a-f]{40}$/i.test(t) && (!(!/^(0x)?[0-9a-f]{40}$/.test(t) && !/^(0x)?[0-9A-F]{40}$/.test(t)))
     },
     setBlockSearch ({ _id, name }) {
       _id = _id.toLocaleLowerCase()

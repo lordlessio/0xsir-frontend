@@ -2,7 +2,7 @@
   <header data-html2canvas-ignore id="sir-main-header" class="TTFontBold sir-header" :class="[{ 'is-hide': hide }, { 'search': searchModel }]">
     <div class="container">
       <div class="d-flex col-flex lens-header-cnt">
-        <p class="TTFontBlack v-flex d-flex align-center text-uppper lens-header-logo" @click.stop="$router.push('/')">
+        <p class="TTFontBlack d-flex align-center text-uppper lens-header-logo" @click.stop="$router.push('/')">
           <svg class="image-logo">
             <use xlink:href="#blocklens-gradient-logo"/>
           </svg>
@@ -10,7 +10,7 @@
             <use xlink:href="#blocklens-text-logo"/>
           </svg>
         </p>
-        <p v-if="showTool" class="d-flex flex-row align-start header-icons">
+        <p v-if="showTool" class="v-flex d-flex flex-row align-center justify-end header-icons">
           <span v-if="!loading" class="i-block line-height-0" @click.stop="$emit('download')">
             <svg>
               <use xlink:href="#icon-download"/>

@@ -48,7 +48,7 @@ export default {
     },
     height: {
       type: String,
-      default: '70%'
+      default: '80%'
     },
     loaded: {
       type: Boolean,
@@ -164,9 +164,11 @@ export default {
 
   }
   .popup-main-cnt {
-    padding: 0 50px;
+    margin: 0 50px;
     box-sizing: border-box;
     overflow: hidden;
+    border: 2px solid #726BFF;
+    border-bottom: none;
   }
   .download-img-loading {
     position: absolute;
@@ -190,7 +192,7 @@ export default {
   .download-img-box {
     min-height: calc(100% + 50px);
     border-radius: 5px 5px 5px 5px;
-    border: 2px solid #726BFF;
+    // border: 2px solid #726BFF;
   }
   .popup-tip-box {
     padding: 35px 0;

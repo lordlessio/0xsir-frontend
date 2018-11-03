@@ -52,8 +52,8 @@
           :key="index"
           class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
           <p class="v-flex d-flex align-center text-left erc20-assets-name">
-            <span class="i-block erc20-assets-logo popup-erc20-assets-logo" :style="`background-image: url(${ossOrigin}/0xsir/source/erc20/${erc20.contract})`">
-              <!-- <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
+            <span class="i-block erc20-assets-logo popup-erc20-assets-logo">
+              <img v-lazy="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)"/>
             </span>
             <span class="d-flex flex-col">
               <span>
@@ -104,7 +104,9 @@
               <li
                 v-for="(item, index) of asset.list.slice(0, 4)" :key="index"
                 class="d-iflex flex-col align-center NFTs-assets-item">
-                <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.name === 'CryptoKitties' }" v-lazy:background-image="item.poster"></span>
+                <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.assets.name === 'CryptoKitties' }">
+                  <img v-lazy="resizeImage(item.poster)"/>
+                </span>
                 <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
               </li>
             </ul>
@@ -155,8 +157,8 @@
         :style="`transition-delay: ${index * 0.05}s;`"
         class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
         <p class="v-flex d-flex align-center text-left erc20-assets-name">
-          <span class="i-block erc20-assets-logo popup-erc20-assets-logo" :style="`background-image: url(${ossOrigin}/0xsir/source/erc20/${erc20.contract})`">
-            <!-- <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${erc20.contract}`"/> -->
+          <span class="i-block erc20-assets-logo popup-erc20-assets-logo">
+            <img v-lazy="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)"/>
           </span>
           <span class="d-flex flex-col">
             <span>
@@ -201,7 +203,9 @@
                   <li
                     v-for="(item, index) of asset.list" :key="index"
                     class="d-iflex flex-col align-center NFTs-assets-item">
-                    <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.name === 'CryptoKitties' }" v-lazy:background-image="item.poster"></span>
+                    <span class="i-block NFTs-asset-poster" :class="{ 'cryptokitties': item.assets.name === 'CryptoKitties' }">
+                      <img v-lazy="resizeImage(item.poster)"/>
+                    </span>
                     <p class="full-width text-center NFTs-asset-tokenId" :class="{ 'sm': item.tokenId.toString().length > 6 }">#{{ item.tokenId }}</p>
                   </li>
                 </ul>
@@ -725,7 +729,10 @@ export default {
 
   // popup style
   .popup-erc20-assets-item {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+    .popup-erc20-count {
+      color: #DFEEFF;
+    }
     &:nth-of-type(1) {
       .popup-erc20-count {
         color: $erc20-color-gold;
@@ -774,28 +781,37 @@ export default {
     white-space: nowrap;
   }
   .NFTs-assets-item {
+    width: 25%;
     &:not(:last-of-type) {
       margin-right: 5px;
     }
   }
   .NFTs-asset-poster {
-    width: 72px;
-    height: 72px;
+    position: relative;
+    width: 58px;
+    height: 58px;
     @include bg-size();
     &.cryptokitties {
       background-size: 120%;
       background-position-x: 80%;
       >img {
-        width: 125%;
+        width: 150%;
       }
     }
     >img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
       width: 100%;
+      transform: translate(-50%, -50%);
     }
   }
   .NFTs-asset-tokenId {
+    margin-top: 5px;
     &.sm {
       font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   .NFTs-asset-more {
