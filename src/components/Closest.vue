@@ -270,8 +270,8 @@ export default {
     }
   }
   .closest-tx-total {
-    padding: 6px 0;
-    width: 56px;
+    padding: 6px 10px;
+    // width: 56px;
     font-size: 16px;
     background-color: #7D72F0;
     border-radius: 5px;

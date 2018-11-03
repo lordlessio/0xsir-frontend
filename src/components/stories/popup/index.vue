@@ -31,8 +31,8 @@ export default {
     },
     title: String,
     height: {
-      type: Number,
-      default: 450
+      type: String,
+      default: '80%'
     },
     appendToBody: {
       type: Boolean,

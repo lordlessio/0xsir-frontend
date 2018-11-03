@@ -5,7 +5,7 @@
         <div v-if="unInfo" class="relative index-1">
           <sir-blockies class="overview-blockies" :seed="address"/>
           <h1 @click.stop="isFullAddress = !isFullAddress">
-            <span v-if="!isFullAddress" class="sir-title-block bottom lg">{{ address | sliceStr({ end: 11 }) }}...</span>
+            <span v-if="!isFullAddress" class="sir-title-block bottom lg">{{ address | splitAddress({ before: 6, end: 4 }) }}</span>
             <span v-else class="TTFontMedium i-block text-left sir-full-address">{{ address }}</span>
           </h1>
         </div>
@@ -62,6 +62,10 @@
     </div>
     <div class="d-flex flex-col">
       <ul class="overview-tx-ul overview-tx-timeline" :class="{ 'order-2': download }">
+        <li v-if="download" class="d-flex flex-row align-center">
+          <p>Holding value</p>
+          <p class="v-flex text-right overview-text">$ {{ erc20Datas.totalValue | formatNumber }}</p>
+        </li>
         <li class="d-flex flex-row align-center">
           <p>Birthday</p>
           <p class="v-flex text-right overview-text">{{ new Date(parseInt(overviewDatas.txTimeline.first.timeStamp) * 1000) | dateFormat }}</p>
@@ -73,6 +77,14 @@
         <li class="d-flex flex-row align-center">
           <p>Transactions</p>
           <p class="v-flex text-right overview-text">{{ erc20Datas.eth.txns | formatNumber }}</p>
+        </li>
+        <li v-if="download" class="d-flex flex-row align-center">
+          <p>NFTS</p>
+          <p class="v-flex text-right overview-text">{{ NFTDatas.total | formatNumber }}</p>
+        </li>
+        <li v-if="download" class="d-flex flex-row align-center">
+          <p>Erc20</p>
+          <p class="v-flex text-right overview-text">{{ erc20Datas.total | formatNumber }}</p>
         </li>
       </ul>
       <div v-if="words.length" class="overview-address-cloud">
@@ -119,12 +131,11 @@ export default {
     },
     erc20Datas: {
       type: Object,
-      default: () => {
-        return {
-          eth: {},
-          list: []
-        }
-      }
+      default: () => {}
+    },
+    NFTDatas: {
+      type: Object,
+      default: () => {}
     },
     download: {
       type: Boolean,

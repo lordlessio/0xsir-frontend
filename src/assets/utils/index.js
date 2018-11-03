@@ -58,7 +58,7 @@ export const sliceStr = (str, { start = 0, end = 8 } = {}) => {
 /**
  * 截取显示部分地址
  */
-export const splitAddress = (address, { before = 5, end = 3, symbol = '…' } = {}) => {
+export const splitAddress = (address, { before = 5, end = 3, symbol = '***' } = {}) => {
   if (typeof address !== 'string') return address
   return address.slice(0, before) + symbol + address.slice(-end)
 }
@@ -80,8 +80,7 @@ export const formatNumber = (number) => {
   number = parseFloat(number)
 
   const symbols = [
-    { symbol: 't', num: 1000000000000 },
-    { symbol: 'g', num: 100000000 },
+    { symbol: 'b', num: 1000000000 },
     { symbol: 'm', num: 1000000 },
     { symbol: 'k', num: 1000 }
   ]

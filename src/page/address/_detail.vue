@@ -19,7 +19,8 @@
           :address="address"
           :overviewDatas="overviewDatas"
           :words="closestWords"
-          :erc20Datas="erc20Datas"/>
+          :erc20Datas="erc20Datas"
+          :NFTDatas="NFTDatas"/>
 
         <closest
           v-if="!download"
@@ -28,7 +29,7 @@
           @search="search"/>
 
         <breakdown
-          :download="download"
+          v-if="!download"
           :loading="nLoading || eLoading"
           :NFTDatas="NFTDatas"
           :erc20Datas="erc20Datas"
@@ -131,7 +132,7 @@ export default {
       return !(this.eLoading || this.nLoading || this.tLoading || this.closestLoading)
     },
     loadingError () {
-      return this.loadingDone && !this.erc20Datas.eth.txns
+      return this.loadingDone && !this.txDatas.list.length && !this.erc20Datas.eth.txns
     },
     download () {
       return this.loadingDone && this.preDownload

@@ -47,7 +47,7 @@
               <div class="v-flex TTFontMedium recent-item-cnt">
                 <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
                   <span v-if="tx.nickName">{{ tx.nickName }}</span>
-                  <span v-else>{{ tx.from | sliceStr }}...</span>
+                  <span v-else>{{ tx.from | splitAddress({ before: 5, end: 3 }) }}</span>
                 </p>
                 <p class="symbol">#{{ tx.tokenSymbol }}</p>
                 <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat('MMM. DD YYYY hh:mm:ss') }}</p>
@@ -107,7 +107,7 @@
         :style="`transition-delay: ${(index + 1) * 0.05}s;`"
         v-for="(tx, index) of txs" :key="index">
         <span class="i-block recent-symbol-poster">
-          <img :data-contract="tx.contract" :src="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`" @error="errorHandle"/>
+          <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`"/>
         </span>
         <div class="v-flex TTFontMedium recent-item-cnt">
           <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
@@ -125,7 +125,7 @@
 
 <script>
 // import { addClass, removeClass, toggleClass } from 'utils'
-import { repushImg } from 'api'
+// import { repushImg } from 'api'
 export default {
   name: 'BlockTransactions',
   props: {
@@ -147,20 +147,23 @@ export default {
   computed: {
     txAssets () {
       return this.txs.slice(0, this.assetsPs)
+    },
+    ossOrigin () {
+      return process.env.OSS_ORIGIN
     }
   },
   methods: {
     getMoreTx () {
       this.popupModel = true
-    },
-    async errorHandle (e) {
-      const _target = e.target
-      const contract = e.target.getAttribute('data-contract')
-      const res = await repushImg(contract)
-      if (res.code === 1000 && res.data) {
-        _target.src = res.data
-      }
     }
+    // async errorHandle (e) {
+    //   const _target = e.target
+    //   const contract = e.target.getAttribute('data-contract')
+    //   const res = await repushImg(contract)
+    //   if (res.code === 1000 && res.data) {
+    //     _target.src = res.data
+    //   }
+    // }
   }
 }
 </script>
