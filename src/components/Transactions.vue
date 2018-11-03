@@ -45,9 +45,9 @@
                 <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`"/>
               </span>
               <div class="v-flex TTFontMedium recent-item-cnt">
-                <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
+                <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.send ? tx.to : tx.from, name: tx.nickName })">
                   <span v-if="tx.nickName">{{ tx.nickName }}</span>
-                  <span v-else>{{ tx.from | splitAddress({ before: 5, end: 3 }) }}</span>
+                  <span v-else>{{ (tx.send ? tx.to : tx.from) | splitAddress({ before: 5, end: 3 }) }}</span>
                 </p>
                 <p class="symbol">#{{ tx.tokenSymbol }}</p>
                 <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat('MMM. DD YYYY hh:mm:ss') }}</p>

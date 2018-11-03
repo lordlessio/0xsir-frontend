@@ -4,7 +4,8 @@
     <div class="d-flex align-center">
       <div class="v-flex lens-share-cnt">
         <p>Missing assets?</p>
-        <p>Scan the QR code<br>for more details</p>
+        <p>Scan the QR code</p>
+        <p>for more details</p>
         <div class="TTFontMedium share-copy-right">
           <p>© 2018 BLOCKLENS</p>
           <p>Powered by blocklens.io</p>

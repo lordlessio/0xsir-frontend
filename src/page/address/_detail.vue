@@ -9,7 +9,7 @@
     <transition name="sir-detail-fade" mode="out-in" @enter="toTop">
       <serach-loading
         key="lens-search-loading"
-        v-if="!loadingDone || !erc20Datas.eth.txns"
+        v-if="!loadingDone || (!this.txDatas.list.length && !erc20Datas.eth.txns)"
         :address="address"
         :error="loadingError"/>
       <div v-else key="lens-content">
@@ -19,8 +19,7 @@
           :address="address"
           :overviewDatas="overviewDatas"
           :words="closestWords"
-          :erc20Datas="erc20Datas"
-          :NFTDatas="NFTDatas"/>
+          :erc20Datas="erc20Datas"/>
 
         <closest
           v-if="!download"
