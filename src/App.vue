@@ -19,12 +19,8 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   font-family: $--font-TTNormsMedium;
   background-color: #151618;
-  height: 100%;
   @include overflow();
   // overflow: auto;
-  // -webkit-overflow-scrolling: touch;
-  /* text-align: center;
-  color: #2c3e50;
   margin-top: 60px; */
 }
 </style>
