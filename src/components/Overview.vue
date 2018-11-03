@@ -78,6 +78,14 @@
           <p>Transactions</p>
           <p class="v-flex text-right overview-text">{{ erc20Datas.eth.txns | formatNumber }}</p>
         </li>
+        <li v-if="download" class="d-flex flex-row align-center">
+          <p>NFTS</p>
+          <p class="v-flex text-right overview-text">{{ NFTDatas.total | formatNumber }}</p>
+        </li>
+        <li v-if="download" class="d-flex flex-row align-center">
+          <p>Erc20</p>
+          <p class="v-flex text-right overview-text">{{ erc20Datas.total | formatNumber }}</p>
+        </li>
       </ul>
       <div v-if="words.length" class="overview-address-cloud">
         <!-- <img src="/static/wordcloud.svg"/> -->

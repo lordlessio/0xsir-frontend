@@ -19,7 +19,8 @@
           :address="address"
           :overviewDatas="overviewDatas"
           :words="closestWords"
-          :erc20Datas="erc20Datas"/>
+          :erc20Datas="erc20Datas"
+          :NFTDatas="NFTDatas"/>
 
         <closest
           v-if="!download"
