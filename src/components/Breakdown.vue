@@ -29,7 +29,7 @@
       <ul v-show="download" class="d-flex flex-row f-wrap justify-start download-erc20-assets text-center">
         <li class="d-iflex flex-col auto-center download-erc20-item" v-for="(erc20, index) of erc20Datas.list.slice(0, 5)" :key="index">
           <span class="i-block erc20-assets-logo download">
-            <img :src="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)" @load.once="onImgLoad" @error.once="onImgError"/>
+            <img :src="`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`" @load.once="onImgLoad" @error.once="onImgError"/>
           </span>
           <span class="i-block TTFontMedium download-erc20-symbol">{{ erc20.symbol | sliceStr({ end: 4 }) }}{{ erc20.symbol.length > 4 ? '..' : '' }}</span>
         </li>

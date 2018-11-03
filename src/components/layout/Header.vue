@@ -1,6 +1,6 @@
 <template>
-  <header data-html2canvas-ignore id="sir-main-header" class="TTFontBold sir-header" :class="{ 'is-hide': hide }">
-    <div class="container" :class="{ 'search': searchModel }">
+  <header data-html2canvas-ignore id="sir-main-header" class="TTFontBold sir-header" :class="[{ 'is-hide': hide }, { 'search': searchModel }]">
+    <div class="container">
       <div class="d-flex col-flex lens-header-cnt">
         <p class="TTFontBlack v-flex d-flex align-center text-uppper lens-header-logo" @click.stop="$router.push('/')">
           <svg class="image-logo">
@@ -182,13 +182,19 @@ export default {
     color: #fff;
     background-color: transparent;
     z-index: 99;
+    transition: all .4s ease;
     &.fixed {
-      // position: fixed;
-      // top: 0;
-      // z-index: 99;
+      background-color: #151618;
       .container {
         padding-top: 15px;
-        background-color: #151618;
+        // background-color: #151618;
+      }
+    }
+    &.search {
+      background-color: #151618;
+      .container {
+        padding-top: 15px;
+        padding-bottom: 25px;
       }
     }
     .container {
@@ -196,11 +202,11 @@ export default {
       padding-bottom: 15px;
       width: 100%;
       transition: all .4s ease;
-      &.search {
-        padding-top: 15px;
-        padding-bottom: 25px;
-        background-color: #151618;
-      }
+      // &.search {
+      //   padding-top: 15px;
+      //   padding-bottom: 25px;
+      //   background-color: #151618;
+      // }
     }
     &.is-hide {
       .container {
