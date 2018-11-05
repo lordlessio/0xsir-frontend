@@ -1,5 +1,9 @@
 export default {
   methods: {
+    clearInput () {
+      this.searchInput = ''
+      this.$refs['search-input'] && this.$refs['search-input'].focus()
+    },
     checkInput (t) {
       t = t.toLocaleLowerCase()
       // const match = /^(0x)([A-Za-z0-9]{40})$/

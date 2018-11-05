@@ -169,7 +169,6 @@ export const getBase64Image = (img, width, height) => {
  */
 export const img2Base64 = (url) => {
   url = url.split('?')[0]
-  console.log('url', url)
   return new Promise((resolve, reject) => {
     let img = new Image()
     img.crossOrigin = ''

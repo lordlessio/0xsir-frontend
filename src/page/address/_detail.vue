@@ -87,8 +87,6 @@ export default {
       drawloaded: false,
       // downloadLoaded: false,
       preDownload: false,
-      // address: '0x533A99a1292C7ddB74621BF288F50fa34D42C79E',
-      address: '',
 
       overviewLoading: true,
       overviewDatas: {
@@ -149,6 +147,9 @@ export default {
     },
     closestWords () {
       return this.closestsData.words || []
+    },
+    address () {
+      return this.$route.params.address
     }
   },
 
@@ -158,6 +159,9 @@ export default {
     },
     downloadLoaded (val) {
       if (val) this.drawImage()
+    },
+    address (val) {
+      if (val) this.init({ address: val })
     }
   },
   components: {
@@ -179,11 +183,11 @@ export default {
     search ({ _id, name }) {
       if (!this.checkInput(_id)) return
       document.getElementById('app').scrollTop = 0
-      this.address = _id
+      // this.address = _id
       this.init({ address: _id })
       this.setBlockSearch({ _id, name })
-      this.$router.push(`/address/${_id}`)
-      // window.history.pushState(null, null, `/address/${_id}`)
+      // this.$router.push(`/address/${_id}`)
+      window.history.pushState(null, _id, `/address/${_id}`)
     },
 
     async drawImage () {
@@ -212,6 +216,8 @@ export default {
     },
 
     async init ({ address = this.address } = {}) {
+      if (!this.checkInput(address)) return
+
       this.getNFTs({ address })
       this.getErc20({ address })
       this.initTxDatas({ address })
@@ -334,7 +340,6 @@ export default {
 
   async mounted () {
     const address = this.$route.params.address
-    this.address = address
     this.$nextTick(() => {
       this.init(address)
     })

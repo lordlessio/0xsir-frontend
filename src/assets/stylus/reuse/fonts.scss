@@ -1,9 +1,9 @@
 /* font-family */
 @font-face {
   font-family: 'Impact';
-  src: url('~/static/fonts/Impact.woff2') format('woff2'), /* Modern Browsers */
-       url('~/static/fonts/Impact.ttf') format('truetype'); /* Safari, Android, iOS */
-           font-style: normal;
+  src: url('//lordless.oss-cn-hongkong.aliyuncs.com/static/fonts/Impact.woff2') format('woff2'), /* Modern Browsers */
+  url('//lordless.oss-cn-hongkong.aliyuncs.com/static/fonts/Impact.ttf') format('truetype'); /* Safari, Android, iOS */
+  font-style: normal;
   font-weight: bold;
   text-rendering: optimizeLegibility;
 }

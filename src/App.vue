@@ -22,5 +22,9 @@ export default {
   height: 100%;
   @include overflow();
   // overflow: auto;
+  &::before {
+    content: '';
+    font-family: Impact;
+  }
 }
 </style>

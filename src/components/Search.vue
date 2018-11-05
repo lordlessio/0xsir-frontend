@@ -9,8 +9,15 @@
       </h1>
       <div class="search-input-box" :class="{ 'is-focus': inputFocus, 'is-error': inputError }" :data-error="inputErrorTxt">
         <div class="d-flex row-flex search-input-container">
-          <input v-model="searchModel" class="TTFontMedium v-flex search-input" type="text" placeholder="Enter Ethereum address" @focus="inputFocus = true" @blur="inputFocus = false"/>
-          <span class="d-iflex auto-center text-center search-input-icon" @click.stop="$emit('search', { _id: searchModel })">
+          <div class="relative v-flex search-input-cnt">
+            <input ref="search-input" v-model="searchInput" class="TTFontMedium search-input" type="text" placeholder="Enter Ethereum address" @focus="inputFocus = true" @blur="inputFocus = false"/>
+            <span v-show="searchInput" @click.stop="clearInput" class="i-block line-height-0 search-input-close">
+              <svg>
+                <use xlink:href="#icon-close"/>
+              </svg>
+            </span>
+          </div>
+          <span class="d-iflex auto-center text-center search-input-icon" @click.stop="$emit('search', { _id: searchInput })">
             <svg>
               <use xlink:href="#icon-search"/>
             </svg>
@@ -81,7 +88,7 @@ export default {
       groups: [],
       inputErrorTxt: '',
       inputError: false,
-      searchModel: '',
+      searchInput: '',
       inputFocus: false,
       showCollapse: false,
       activeNames: vm.actives
@@ -103,7 +110,7 @@ export default {
       }
     },
 
-    searchModel (val) {
+    searchInput (val) {
       if (val) {
         const bool = this.checkInput(val)
         if (!bool) this.inputErrorTxt = 'Enter the correct Ethereum address.'
@@ -219,23 +226,37 @@ export default {
     }
   }
   .search-input-container {
+    width: 100%;
     height: 50px;
     line-height: 50px;
     border-radius: 5px;
     overflow: hidden;
   }
+
   .search-input {
+    padding-left: 15px;
+    padding-right: 30px;
     width: 100%;
     height: 100%;
-    padding-left: 15px;
-    padding-right: 15px;
     font-size: 16px;
     color: #BDB9FD;
     background-color: transparent;
+    box-sizing: border-box;
     &::placeholder {
       color: #BDB9FD;
     }
   }
+  .search-input-close {
+    position: absolute;
+    right: 10px;
+    top: 17px;
+    >svg {
+      width: 16px;
+      height: 16px;
+      fill: #BDB9FD;
+    }
+  }
+
   .search-input-icon {
     width: 64px;
     background-color: #7D72F0;
