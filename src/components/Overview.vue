@@ -244,11 +244,6 @@ export default {
           })
 
         this.transferToImg()
-
-        // d3.select('body').append('custom:sketch')
-        //   .attr('width', 300)
-        //   .attr('height', 200)
-        //   .call(custom)
       }
       const small = words.length <= 15
       const log = small ? 0.15 : 0.5
@@ -506,10 +501,6 @@ export default {
     &.scale {
       transform: scale(.33);
       transform-origin: 0 0;
-    }
-    &::before {
-      content: '';
-      font-family: Impact;
     }
   }
   .download-word-cloud {

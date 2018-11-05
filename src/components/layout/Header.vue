@@ -36,7 +36,14 @@
       <transition name="sir-detail-fade" @after-enter="searchAfterEnter">
         <div v-if="searchModel" class="lens-header-search">
           <div class="d-flex flex-row">
-            <input ref="header-search-input" v-model="searchInput" class="TTFontMedium v-flex lens-search-input" type="text" placeholder="Enter Ethereum address"/>
+            <div class="relative v-flex">
+              <input ref="search-input" v-model="searchInput" class="TTFontMedium lens-search-input" type="text" placeholder="Enter Ethereum address"/>
+              <span v-show="searchInput" @click.stop="clearInput" class="i-block line-height-0 search-input-close">
+                <svg>
+                  <use xlink:href="#icon-close"/>
+                </svg>
+              </span>
+            </div>
             <span class="d-iflex auto-center text-center search-input-icon" @click.stop="search({ _id: searchInput })">
               <svg>
                 <use xlink:href="#icon-search"/>
@@ -133,7 +140,7 @@ export default {
       this.$emit('search', e)
     },
     searchAfterEnter () {
-      this.$refs['header-search-input'].focus()
+      this.$refs['search-input'].focus()
     }
   },
   mounted () {
@@ -276,13 +283,26 @@ export default {
     margin-top: 25px;
   }
   .lens-search-input {
-    padding-right: 30px;
+    padding-right: 45px;
     padding-left: 3px;
+    width: 100%;
     height: 20px;
     border: none;
     font-size: 16px;
     color: #BDB9FD;
     background-color: transparent;
+    box-sizing: border-box;
+
+  }
+  .search-input-close {
+    position: absolute;
+    right: 15px;
+    top: 2px;
+    >svg {
+      width: 16px;
+      height: 16px;
+      fill: #BDB9FD;
+    }
   }
   .search-input-icon {
     svg {
@@ -320,7 +340,7 @@ export default {
   }
   .header-search-error {
     position: fixed;
-    top: 50%;
+    top: 45%;
     left: 0;
     width: 100%;
     font-size: 14px;

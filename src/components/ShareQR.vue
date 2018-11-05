@@ -44,8 +44,8 @@ export default {
 
       const qrcode = new QRCode(document.getElementById('qrcode'), {
         text: location.href,
-        width: 348,
-        height: 348,
+        width: 312,
+        height: 312,
         colorDark: '#7D72F0',
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
@@ -53,7 +53,7 @@ export default {
       this.qrcode = qrcode
       return setTimeout(() => {
         this.$emit('update:loaded', true)
-      }, 500)
+      }, 0)
     })
   },
   beforeDestroy () {
@@ -83,9 +83,9 @@ export default {
     line-height: 1.2;
   }
   .share-qr {
-    padding: 10px;
-    width: 136px;
-    height: 136px;
+    padding: 12px;
+    width: 126px;
+    height: 126px;
     background-color: #fff;
     border-radius: 5px;
     box-sizing: border-box;
