@@ -112,7 +112,8 @@ export default {
       inputErrorTxt: '',
       searchInput: '',
       maskModel: false,
-      searchModel: false
+      searchModel: false,
+      headerListener: null
     }
   },
   computed: {
@@ -128,6 +129,16 @@ export default {
         const bool = this.checkInput(val)
         if (!bool) this.inputErrorTxt = 'Enter the correct Ethereum address.'
       } else this.inputErrorTxt = null
+    },
+    hide (val) {
+      if (!val) {
+        this.$nextTick(() => this.headerScroll())
+      }
+    },
+    searchModel (val) {
+      if (!val) {
+        this.$nextTick(() => this.headerScroll())
+      }
     }
   },
   components: {
@@ -135,45 +146,53 @@ export default {
   },
   methods: {
     search (e) {
-      console.log('00000', e)
       this.searchModel = false
       this.$emit('search', e)
     },
     searchAfterEnter () {
       this.$refs['search-input'].focus()
+    },
+    destroyScroll () {
+      this.headerListener && document.getElementById('app').removeEventListener('scroll', this.headerListener)
+      this.headerListener = null
+    },
+    headerScroll () {
+      this.destroyScroll()
+
+      let navbarInverse = false
+      this.headerListener = () => {
+        const scrollTop = document.getElementById('app').scrollTop
+        const header = document.getElementById('sir-main-header')
+        if (!navbarInverse && scrollTop > 60) {
+        // const header = document.getElementById('sir-main-header')
+          header.style.opacity = 0
+          addClass('fixed', header)
+          header.style.opacity = 1
+          navbarInverse = true
+        } else if (navbarInverse && scrollTop <= 60) {
+        // const header = document.getElementById('sir-main-header')
+          header.style.opacity = 0
+          removeClass('fixed', header)
+          header.style.opacity = 1
+          navbarInverse = false
+        }
+      }
+      this.headerListener()
+      this.$nextTick(() => {
+        document.getElementById('app').addEventListener('scroll', this.headerListener)
+      })
     }
   },
   mounted () {
     if (this.appendToBody) {
       document.body.appendChild(this.$el)
     }
-    let navbarInverse = false
-    const func = () => {
-      const scrollTop = document.getElementById('app').scrollTop
-      if (!navbarInverse && scrollTop > 60) {
-        const header = document.getElementById('sir-main-header')
-        header.style.opacity = 0
-        addClass('fixed', header)
-        header.style.opacity = 1
-        navbarInverse = true
-      } else if (navbarInverse && scrollTop <= 60) {
-        const header = document.getElementById('sir-main-header')
-        header.style.opacity = 0
-        removeClass('fixed', header)
-        header.style.opacity = 1
-        navbarInverse = false
-      }
-    }
-    func()
-    document.getElementById('app').addEventListener('scroll', func)
-
-    this.$once('hook:beforeDestroy', () => {
-      document.getElementById('app').removeEventListener('scroll', func)
-    })
+    this.headerScroll()
   },
   beforeDestroy () {
     if (this.$el && this.$el.parentNode) {
       this.$el.parentNode.removeChild(this.$el)
+      this.destroyScroll()
     }
   }
 }
@@ -216,9 +235,10 @@ export default {
       // }
     }
     &.is-hide {
-      .container {
-        transform: translateY(-100%);
-      }
+      transform: translateY(-100%);
+      // .container {
+      //   transform: translateY(-100%);
+      // }
     }
   }
   .lens-header-logo {

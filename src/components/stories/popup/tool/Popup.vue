@@ -78,7 +78,6 @@ export default {
   computed: {
     scrollOpts () {
       const { scrollbar, pullDownRefresh, pullUpLoad } = this
-      console.log('pullUpLoad', pullUpLoad === true ? { txt: { noMore: 'No More Data' } } : pullUpLoad)
       return {
         scrollbar, pullDownRefresh, pullUpLoad: pullUpLoad === true ? { txt: { noMore: 'No More Data' } } : pullUpLoad
       }
@@ -101,14 +100,12 @@ export default {
   methods: {
     pullDown () {
       this.$emit('refresh', () => {
-        console.log('rendered', this.rendered)
         if (!this.rendered) return
         this.$refs.scroll.forceUpdate()
       })
     },
     pullUp () {
       this.$emit('loadmore', () => {
-        console.log('rendered', this.rendered)
         if (!this.rendered) return
         this.$refs.scroll.forceUpdate()
       })
@@ -118,7 +115,6 @@ export default {
       this.$emit('opened')
     },
     destroy () {
-      console.log('-----------destroyed')
       if (this.appendToBody && this.$el && this.$el.parentNode) {
         this.rendered = false
         if (this.$refs.scroll) this.$refs.scroll.forceUpdate()

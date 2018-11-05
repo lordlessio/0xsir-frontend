@@ -19,7 +19,7 @@
             </svg>
           </span>
           <div class="v-flex footer-link-cnt">
-            <a class="TTFontBold i-block" href="http://lordless.games" target="_blank">LORDLESS TEAM</a>
+            <a class="TTFontBold i-block" href="http://lordless.io/team" target="_blank">LORDLESS TEAM</a>
           </div>
           <!-- <span class="v-flex">Decentralized task distribution platform with game as carrier</span> -->
         </li>
