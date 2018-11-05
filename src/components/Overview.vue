@@ -82,7 +82,8 @@
       <div v-if="words.length" class="overview-address-cloud">
         <!-- <img src="/static/wordcloud.svg"/> -->
         <div class="overview-word-cloud-parent">
-          <div id="overview-word-cloud" class="overview-word-cloud"></div>
+          <div v-show="!download" id="overview-word-cloud" class="overview-word-cloud"></div>
+          <div id="download-word-cloud" class="download-word-cloud" :class="{ 'is-show': download }"></div>
         </div>
         <div class="TTFontMedium d-flex auto-center overview-cloud-point">
           <span>Less</span>
@@ -100,7 +101,7 @@
 <script>
 import * as d3 from 'd3'
 import Cloud from 'd3-cloud'
-import { addClass, filterSocialIcon } from 'utils'
+import { addClass, filterSocialIcon, appendScript } from 'utils'
 export default {
   name: 'sir-overview',
   props: {
@@ -129,6 +130,10 @@ export default {
       type: Boolean,
       default: false
     },
+    loaded: {
+      type: Boolean,
+      default: false
+    },
     words: {
       type: Array,
       default: () => []
@@ -152,6 +157,36 @@ export default {
     //   const _list = []
 
     // },
+    async transferToImg () {
+      const _this = this
+      if (!window.canvg) {
+        await appendScript(['http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/canvg.min.js', 'http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/rgbcolor.min.js'])
+      }
+
+      const _cloud = document.getElementById('overview-word-cloud')
+
+      const cloud = document.getElementById('download-word-cloud')
+      const svg = _cloud.children[0]
+      let data = new XMLSerializer().serializeToString(svg)
+      const canvas = document.createElement('canvas')
+
+      window.canvg(canvas, data, {
+        renderCallback: (d) => {
+          canvas.toBlob(function (blob) {
+            let img = document.createElement('img')
+            let url = canvas.toDataURL()
+
+            img.src = url
+            img.className = 'full-width'
+
+            if (cloud.firstChild) cloud.removeChild(cloud.firstChild)
+            cloud.appendChild(img)
+
+            _this.$emit('update:loaded', true)
+          })
+        }
+      })
+    },
     cloudColor (number) {
       number = parseInt(number)
       let color = '#DFEEFF'
@@ -166,18 +201,15 @@ export default {
       }
       return color
     },
-    drawCloud (words = this.words) {
+    async drawCloud (words = this.words) {
+      this.$emit('update:loaded', false)
       const dom = document.getElementById('overview-word-cloud')
       if (!dom) return
-      const { width, height } = document.getElementById('overview-word-cloud').getBoundingClientRect()
+      const { width, height } = dom.getBoundingClientRect()
 
       const draw = (words) => {
         addClass('scale', dom)
-        // var fill = d3.scale.category20();
-        // var fill = d3.schemeCategory10
-        // var color = d3.scaleOrdinal("1231");
-        // console.log(color);
-        d3.select('#overview-word-cloud')
+        d3.select(dom)
           .append('svg')
           .attr('width', layout.size()[0])
           .attr('height', layout.size()[1])
@@ -210,6 +242,13 @@ export default {
           .text(function (d) {
             return d.text
           })
+
+        this.transferToImg()
+
+        // d3.select('body').append('custom:sketch')
+        //   .attr('width', 300)
+        //   .attr('height', 200)
+        //   .call(custom)
       }
       const small = words.length <= 15
       const log = small ? 0.15 : 0.5
@@ -228,7 +267,7 @@ export default {
             // _size = _size > 450 / d.name.length ? 450 / d.name.length : _size
 
             // console.log('====', d.name.length, _size)
-            console.log('_size', _size)
+            // console.log('_size', _size)
             return { text: d.name, size: _size * scale, count: d.count }
           })
         )
@@ -244,11 +283,12 @@ export default {
         })
         .font('Impact')
         .fontSize(function (d) {
-          console.log('----', d)
+          // console.log('----', d)
           return d.size
           // return Math.sqrt(d.count)
         })
         .on('end', draw)
+        // .spiral('rectangular')
 
       layout.start()
     }
@@ -453,25 +493,37 @@ export default {
     margin: 0 auto;
     width: 900px;
     height: 600px;
-    // font-family: BlocklensImpact;
     z-index: 1;
+    // img {
+    //   width: 100%;
+    // }
     // background-color: #7D72F0;
     // box-shadow: 0 0 20px 3px #7D72F0;
     // background-image: url(~/static/shadow.png);
     // background-size: 100% auto;
     // background-repeat: no-repeat;
     // background-image: linear-gradient()
-    >svg {
-      display: none;
-    }
     &.scale {
       transform: scale(.33);
       transform-origin: 0 0;
     }
-    // &::before {
-    //   content: '';
-    //   font-family: BlocklensImpact;
-    // }
+    &::before {
+      content: '';
+      font-family: Impact;
+    }
+  }
+  .download-word-cloud {
+    position: relative;
+    margin: 0 auto;
+    width: 300px;
+    height: 200px;
+    visibility: hidden;
+    opacity: 0;
+    z-index: 1;
+    &.is-show {
+      visibility: visible;
+      opacity: 1;
+    }
   }
   .overview-cloud-point {
     margin-top: 12px;

@@ -20,7 +20,8 @@
           :overviewDatas="overviewDatas"
           :words="closestWords"
           :erc20Datas="erc20Datas"
-          :NFTDatas="NFTDatas"/>
+          :NFTDatas="NFTDatas"
+          :loaded.sync="cloudLoaded"/>
 
         <closest
           v-if="!download"
@@ -43,17 +44,16 @@
           @loadmore="loadmoreTxDatas"
           @search="search"/>
 
-        <share-q-r v-if="download"/>
+        <share-q-r v-if="download" :loaded.sync="qrcodeLoaded"/>
       </div>
     </transition>
     <sir-footer v-if="!download"/>
     <lens-download-popup
       ref="lensDownload"
       :visible="download"
-      :loaded="downloadLoaded"
+      :loaded="drawloaded"
       @close="closeDownload"
-      @closed="downloadClosed"
-      @opened="drawImage">
+      @closed="downloadClosed">
       <div id="popup-download-img"></div>
     </lens-download-popup>
   </main>
@@ -84,7 +84,8 @@ export default {
   mixins: [SearchMixin],
   data: () => {
     return {
-      downloadLoaded: false,
+      drawloaded: false,
+      // downloadLoaded: false,
       preDownload: false,
       // address: '0x533A99a1292C7ddB74621BF288F50fa34D42C79E',
       address: '',
@@ -115,7 +116,10 @@ export default {
       closestsData: {
         list: [],
         words: []
-      }
+      },
+
+      qrcodeLoaded: false,
+      cloudLoaded: false
     }
   },
   computed: {
@@ -137,6 +141,9 @@ export default {
     download () {
       return this.loadingDone && this.preDownload
     },
+    downloadLoaded () {
+      return this.download && this.qrcodeLoaded && this.cloudLoaded
+    },
     closests () {
       return this.closestsData.list || []
     },
@@ -148,6 +155,9 @@ export default {
   watch: {
     loadingDone (val) {
       if (val) document.getElementById('app').scrollTop = 0
+    },
+    downloadLoaded (val) {
+      if (val) this.drawImage()
     }
   },
   components: {
@@ -172,41 +182,33 @@ export default {
       this.address = _id
       this.init({ address: _id })
       this.setBlockSearch({ _id, name })
-      window.history.pushState(null, null, `/address/${_id}`)
+      this.$router.push(`/address/${_id}`)
+      // window.history.pushState(null, null, `/address/${_id}`)
     },
 
-    // saveFile (data, filename) {
-    //   const saveLink = document.createElementNS('http://www.w3.org/1999/xhtml', 'a')
-    //   saveLink.href = data
-    //   saveLink.download = filename
-
-    //   const event = document.createEvent('MouseEvents')
-    //   event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-    //   saveLink.dispatchEvent(event)
-    // },
-
     async drawImage () {
-      setTimeout(() => {
-        Html2Canvas(document.getElementById('sir-main'), {
-          useCORS: true,
-          scale: window.devicePixelRatio + 1
-        }).then((canvas) => {
-          const img = document.createElement('img')
-          img.className = 'lens-download-img full-width'
-          img.src = canvas.toDataURL('image/png', 1)
-          this.downloadLoaded = true
-          // console.log('canvas', canvas, canvas.toDataURL())
+      // if (!this.downloadLoaded) return
+      Html2Canvas(document.getElementById('sir-main'), {
+        useCORS: true,
+        scale: window.devicePixelRatio + 1
+      }).then((canvas) => {
+        const img = document.createElement('img')
+        img.className = 'lens-download-img full-width'
+        img.src = canvas.toDataURL('image/png', 1)
 
-          this.$nextTick(() => document.getElementById('popup-download-img').appendChild(img))
+        this.$nextTick(() => {
+          document.getElementById('popup-download-img').appendChild(img)
+          this.drawloaded = true
+          this.qrcodeLoaded = false
         })
-      }, 1000)
+      })
     },
 
     closeDownload () {
       this.preDownload = false
     },
     downloadClosed () {
-      this.downloadLoaded = false
+      this.drawloaded = false
     },
 
     async init ({ address = this.address } = {}) {

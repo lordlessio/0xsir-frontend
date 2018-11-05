@@ -27,6 +27,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   },
   globals: {
-    QRCode: true
+    QRCode: true,
+    canvg: true
   }
 }

@@ -231,3 +231,20 @@ export const resizeImage = (url, size = 140) => {
 export const generateId = function () {
   return Math.floor(Math.random() * 10000)
 }
+
+export const appendScript = (srcs) => {
+  return new Promise(resolve => {
+    let count = 0
+    for (const src of srcs) {
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = src
+      script.sync = true
+      document.body.appendChild(script)
+      script.onload = () => {
+        count++
+        if (count === srcs.length) resolve(src)
+      }
+    }
+  })
+}
