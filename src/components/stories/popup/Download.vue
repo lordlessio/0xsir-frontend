@@ -86,7 +86,6 @@ export default {
       removeClass('overflow-hidden', document.body)
     },
     destroy () {
-      console.log('-----------destroyed')
       removeClass('overflow-hidden', document.body)
       if (this.appendToBody && this.$el && this.$el.parentNode) {
         this.rendered = false

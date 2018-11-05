@@ -83,7 +83,7 @@
         <!-- <img src="/static/wordcloud.svg"/> -->
         <div class="overview-word-cloud-parent">
           <div v-show="!download" id="overview-word-cloud" class="overview-word-cloud"></div>
-          <div id="download-word-cloud" class="download-word-cloud" :class="{ 'is-show': download }"></div>
+          <div v-show="download" id="download-word-cloud" class="download-word-cloud" :class="{ 'is-show': download }"></div>
         </div>
         <div class="TTFontMedium d-flex auto-center overview-cloud-point">
           <span>Less</span>
@@ -141,7 +141,8 @@ export default {
   },
   data: () => {
     return {
-      isFullAddress: false
+      isFullAddress: false,
+      svgXML: null
     }
   },
   computed: {
@@ -149,6 +150,13 @@ export default {
       return !this.overviewDatas.info || !this.overviewDatas.info.name
     }
   },
+  // watch: {
+  //   download (val) {
+  //     if (val) {
+  //       this.$nextTick(() => this.transferToImg())
+  //     }
+  //   }
+  // },
   methods: {
     filterSocialIcon () {
       return filterSocialIcon(...arguments)
@@ -158,6 +166,9 @@ export default {
 
     // },
     async transferToImg () {
+      this.$emit('update:loaded', false)
+
+      console.log('transferToImg')
       const _this = this
       if (!window.canvg) {
         await appendScript(['http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/canvg.min.js', 'http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/rgbcolor.min.js'])
@@ -167,10 +178,10 @@ export default {
 
       const cloud = document.getElementById('download-word-cloud')
       const svg = _cloud.children[0]
-      let data = new XMLSerializer().serializeToString(svg)
+      let xml = new XMLSerializer().serializeToString(svg)
       const canvas = document.createElement('canvas')
 
-      window.canvg(canvas, data, {
+      window.canvg(canvas, xml, {
         renderCallback: (d) => {
           canvas.toBlob(function (blob) {
             let img = document.createElement('img')
@@ -202,9 +213,10 @@ export default {
       return color
     },
     async drawCloud (words = this.words) {
-      this.$emit('update:loaded', false)
       const dom = document.getElementById('overview-word-cloud')
       if (!dom) return
+
+      this.$emit('update:loaded', false)
       const { width, height } = dom.getBoundingClientRect()
 
       const draw = (words) => {
@@ -243,6 +255,7 @@ export default {
             return d.text
           })
 
+        // this.svgXML = new XMLSerializer().serializeToString(dom.children[0])
         this.transferToImg()
       }
       const small = words.length <= 15
@@ -263,6 +276,7 @@ export default {
 
             // console.log('====', d.name.length, _size)
             // console.log('_size', _size)
+            if (d.name === '\u0001') d.name = 'DAO'
             return { text: d.name, size: _size * scale, count: d.count }
           })
         )

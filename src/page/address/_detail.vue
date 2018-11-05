@@ -84,6 +84,8 @@ export default {
   mixins: [SearchMixin],
   data: () => {
     return {
+      address: '',
+
       drawloaded: false,
       // downloadLoaded: false,
       preDownload: false,
@@ -147,19 +149,20 @@ export default {
     },
     closestWords () {
       return this.closestsData.words || []
-    },
-    address () {
-      return this.$route.params.address
     }
   },
 
   watch: {
+    '$route' ({ params }) {
+      this.address = params.address
+    },
     loadingDone (val) {
       if (val) document.getElementById('app').scrollTop = 0
     },
     downloadLoaded (val) {
       if (val) this.drawImage()
     },
+
     address (val) {
       if (val) this.init({ address: val })
     }
@@ -183,11 +186,8 @@ export default {
     search ({ _id, name }) {
       if (!this.checkInput(_id)) return
       document.getElementById('app').scrollTop = 0
-      // this.address = _id
-      this.init({ address: _id })
       this.setBlockSearch({ _id, name })
-      // this.$router.push(`/address/${_id}`)
-      window.history.pushState(null, _id, `/address/${_id}`)
+      this.$router.push(`/address/${_id}`)
     },
 
     async drawImage () {
@@ -341,6 +341,7 @@ export default {
   async mounted () {
     const address = this.$route.params.address
     this.$nextTick(() => {
+      this.address = address
       this.init(address)
     })
     // this.$createHelloWorld({
