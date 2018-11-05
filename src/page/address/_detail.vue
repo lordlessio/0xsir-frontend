@@ -149,6 +149,9 @@ export default {
     },
     closestWords () {
       return this.closestsData.words || []
+    },
+    address () {
+      return this.$route.params.address
     }
   },
 
@@ -162,7 +165,6 @@ export default {
     downloadLoaded (val) {
       if (val) this.drawImage()
     },
-
     address (val) {
       if (val) this.init({ address: val })
     }
