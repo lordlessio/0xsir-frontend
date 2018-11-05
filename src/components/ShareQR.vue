@@ -21,10 +21,28 @@
 </template>
 
 <script>
+import { appendScript } from 'utils'
 export default {
+  props: {
+    loaded: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data: () => {
+    return {
+      qrcode: null
+    }
+  },
   mounted () {
-    this.$nextTick(() => {
-      return new QRCode(document.getElementById('qrcode'), {
+    this.$nextTick(async () => {
+      this.$emit('update:loaded', false)
+      console.log('window.QRCode', window.QRCode)
+      if (!window.QRCode) {
+        await appendScript(['http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/qrcode.js'])
+      }
+
+      const qrcode = new QRCode(document.getElementById('qrcode'), {
         text: location.href,
         width: 348,
         height: 348,
@@ -32,7 +50,14 @@ export default {
         colorLight: '#ffffff',
         correctLevel: QRCode.CorrectLevel.H
       })
+      this.qrcode = qrcode
+      return setTimeout(() => {
+        this.$emit('update:loaded', true)
+      }, 500)
     })
+  },
+  beforeDestroy () {
+    if (this.qrcode) this.qrcode.clear()
   }
 }
 </script>
