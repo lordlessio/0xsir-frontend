@@ -149,9 +149,6 @@ export default {
     },
     closestWords () {
       return this.closestsData.words || []
-    },
-    address () {
-      return this.$route.params.address
     }
   },
 

@@ -1,3 +1,5 @@
+import './googleAnalytics'
+
 import './filter'
 
 import './lazy'

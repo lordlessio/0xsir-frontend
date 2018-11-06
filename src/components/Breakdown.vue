@@ -53,7 +53,7 @@
           class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
           <p class="v-flex d-flex align-center text-left erc20-assets-name">
             <span class="i-block erc20-assets-logo popup-erc20-assets-logo">
-              <img v-lazy="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)"/>
+              <img v-lazy="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract.toLocaleLowerCase()}`)"/>
             </span>
             <span class="d-flex flex-col">
               <span>
@@ -157,8 +157,8 @@
         :style="`transition-delay: ${index * 0.05}s;`"
         class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
         <p class="v-flex d-flex align-center text-left erc20-assets-name">
-          <span class="i-block erc20-assets-logo popup-erc20-assets-logo">
-            <img v-lazy="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract}`)"/>
+          <span class="i-block erc20-assets-logo popup-erc20-assets-logo" :data-contract="erc20.contract">
+            <img :src="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract.toLocaleLowerCase()}`)" @error.once="onImgError"/>
           </span>
           <span class="d-flex flex-col">
             <span>

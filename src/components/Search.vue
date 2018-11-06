@@ -52,7 +52,7 @@
         <sir-collapse-item
           v-for="(group, index) of Object.keys(groups)" :key="index"
           class="search-collapse-item"
-          :style="`transition-delay: ${index * 0.15}s;`"
+          :style="`transition-delay: ${index * 0.1}s;`"
           :title="`${group} (${groups[group].length})`" :name="index">
           <span
             v-for="(item, index) of groups[group]" :key="index"
@@ -134,7 +134,7 @@ export default {
     },
     rewriteGroups (list) {
       const data = {}
-      const groups = [ 'Binance', 'Bitfinex', 'Fomo3D', 'BigONE', 'GU', 'Gate.io', 'Huobi', 'FCoin', 'Coindelta', 'DDEX', 'TheOcean', 'IDEX' ]
+      const groups = [ 'Binance', 'Bibox', 'BigONE', 'Bgogo', 'Bitfinex', 'Bilaxy', 'Bitmax', 'Hotbit', 'Gate.io', 'Cobinhood', 'CoinExchange.io', 'Huobi', 'Liqui.io', 'Kraken', 'Bittrex', 'Coinbene', 'FCoin', 'Gemini', 'Mercatox', 'Kryptono', 'Coindelta', 'BitUN.io', 'HitBTC', 'Cryptopia', 'Changelly', 'Coinex', 'Kucoin', 'Poloniex', 'Uex', 'Okex', 'Yunbi', 'Poloniex-GNT', 'Remitano', 'Upbit', 'ShapeShift' ]
       for (const group of groups) {
         for (const item of list) {
           if (item.group === group) {
@@ -313,7 +313,7 @@ export default {
     margin-right: -10px;
     opacity: 0;
     transform: translateY(5px);
-    transition: opacity .5s ease-in-out, transform .5s ease-in-out;
+    transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .sir-collapse-box {
     &.is-active {

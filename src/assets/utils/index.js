@@ -221,7 +221,7 @@ export const filter721Url = (str, size = 140) => {
 }
 
 export const resizeImage = (url, size = 140) => {
-  if (!url || typeof url !== 'string') return url
+  if (!url || typeof url !== 'string' || url.match(/(.svg)/)) return url
   if (url.match(/(x-oss-process=image\/resize)/)) return url
 
   return `${url}?x-oss-process=image/resize,w_${size}`
