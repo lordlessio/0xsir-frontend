@@ -3,14 +3,15 @@ const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
-const assetsPublicPath = process.env.NODE_ENV === 'development'
-? config.dev.assetsPublicPath
-: config.build.assetsPublicPath
+const isProduction = process.env.NODE_ENV === 'production'
+const assetsPublicPath = isProduction
+? config.build.assetsPublicPath
+: config.dev.assetsPublicPath
 
 exports.assetsPath = function (_path) {
-  const assetsSubDirectory = process.env.NODE_ENV === 'development'
-    ? config.dev.assetsSubDirectory
-    : config.build.assetsSubDirectory
+  const assetsSubDirectory = isProduction
+    ? config.build.assetsSubDirectory
+    : config.dev.assetsSubDirectory
 
   return path.posix.join(assetsSubDirectory, _path)
 }

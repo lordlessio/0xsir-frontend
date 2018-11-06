@@ -42,7 +42,7 @@
               class="relative d-flex justify-start recent-txs-item"
               v-for="(tx, index) of txAssets" :key="index">
               <span class="i-block recent-symbol-poster">
-                <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`"/>
+                <img v-lazy="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`"/>
               </span>
               <div class="v-flex TTFontMedium recent-item-cnt">
                 <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.send ? tx.to : tx.from, name: tx.nickName })">
@@ -107,7 +107,7 @@
         :style="`transition-delay: ${(index + 1) * 0.05}s;`"
         v-for="(tx, index) of txs" :key="index">
         <span class="i-block recent-symbol-poster">
-          <img v-lazy="`http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/erc20/${tx.contract}`"/>
+          <img :src="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`"/>
         </span>
         <div class="v-flex TTFontMedium recent-item-cnt">
           <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
