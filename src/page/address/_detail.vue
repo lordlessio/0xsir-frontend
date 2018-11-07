@@ -234,6 +234,9 @@ export default {
         const res = await getInfoById(address) || {}
         if (res.code === 1000 && res.data) {
           data = res.data
+
+          const { info } = data
+          info && this.setBlockSearch({ _id: info._id, name: info.name })
         }
       } catch (err) {
         console.warn('overview error', err)

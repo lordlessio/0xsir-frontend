@@ -37,15 +37,16 @@
               <span>More</span>
             </p>
           </div>
-          <ul class="recent-txs-list">
+          <ul class="recent-txs-list" @click.stop="searchIntrust">
             <li
               class="relative d-flex justify-start recent-txs-item"
               v-for="(tx, index) of txAssets" :key="index">
               <span class="i-block recent-symbol-poster">
-                <img v-lazy="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`"/>
+                <img :data-contract="tx.contract" :data-name="tx.tokenSymbol" v-lazy="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`"/>
               </span>
               <div class="v-flex TTFontMedium recent-item-cnt">
-                <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.send ? tx.to : tx.from, name: tx.nickName })">
+                <!-- <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.send ? tx.to : tx.from, name: tx.nickName })"> -->
+                <p :data-contract="tx.send ? tx.to : tx.from" :data-name="tx.nickName" class="TTFontBold name">
                   <span v-if="tx.nickName">{{ tx.nickName }}</span>
                   <span v-else>{{ (tx.send ? tx.to : tx.from) | splitAddress({ before: 5, end: 3 }) }}</span>
                 </p>
@@ -105,16 +106,17 @@
       <li
         class="relative d-flex justify-start recent-txs-item"
         :style="`transition-delay: ${(index + 1) * 0.05}s;`"
-        v-for="(tx, index) of txs" :key="index">
+        v-for="(tx, index) of txs" :key="index"
+        @click.stop="searchIntrust">
         <span class="i-block recent-symbol-poster">
-          <img :src="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`"/>
+          <img :data-contract="tx.contract" :data-name="tx.tokenSymbol" :src="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`" @error.once="onImgError"/>
         </span>
         <div class="v-flex TTFontMedium recent-item-cnt">
-          <p class="TTFontBold name" @click.stop="$emit('search', { _id: tx.from, name: tx.nickName })">
+          <p :data-contract="tx.send ? tx.to : tx.from" :data-name="tx.nickName" class="TTFontBold name">
             <span v-if="tx.nickName">{{ tx.nickName }}</span>
-            <span v-else>{{ tx.from | sliceStr }}...</span>
+            <span v-else>{{ (tx.send ? tx.to : tx.from) | splitAddress({ before: 5, end: 3 }) }}</span>
           </p>
-          <p class="symbol">#{{ tx.tokenSymbol }}</p>
+          <p class="symbol">#{{ tx.tokenSymbol }}{{ index }}</p>
           <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat('MMM. DD YYYY hh:mm:ss') }}</p>
         </div>
         <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth(tx.decimals) | formatNumber }}</p>
@@ -126,8 +128,12 @@
 <script>
 // import { addClass, removeClass, toggleClass } from 'utils'
 // import { repushImg } from 'api'
+
+import ImgLoadMixins from '@/mixins/imageLoad'
+import SearchMixins from '@/mixins/search'
 export default {
   name: 'BlockTransactions',
+  mixins: [ImgLoadMixins, SearchMixins],
   props: {
     loading: {
       type: Boolean,
@@ -147,23 +153,12 @@ export default {
   computed: {
     txAssets () {
       return this.txs.slice(0, this.assetsPs)
-    },
-    ossOrigin () {
-      return process.env.OSS_ORIGIN
     }
   },
   methods: {
     getMoreTx () {
       this.popupModel = true
     }
-    // async errorHandle (e) {
-    //   const _target = e.target
-    //   const contract = e.target.getAttribute('data-contract')
-    //   const res = await repushImg(contract)
-    //   if (res.code === 1000 && res.data) {
-    //     _target.src = res.data
-    //   }
-    // }
   }
 }
 </script>
