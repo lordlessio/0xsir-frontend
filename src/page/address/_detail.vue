@@ -30,10 +30,10 @@
           @search="search"/>
 
         <breakdown
-          v-if="!download"
           :loading="nLoading || eLoading"
           :NFTDatas="NFTDatas"
           :erc20Datas="erc20Datas"
+          :download="download"
           @search="search"/>
 
         <block-transactions
@@ -196,7 +196,7 @@ export default {
         scale: window.devicePixelRatio + 1
       }).then((canvas) => {
         const img = document.createElement('img')
-        img.className = 'lens-download-img full-width'
+        img.className = 'lens-download-img vertical-bottom full-width'
         img.src = canvas.toDataURL('image/png', 1)
 
         this.$nextTick(() => {

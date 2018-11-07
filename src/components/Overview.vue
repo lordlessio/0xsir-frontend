@@ -101,7 +101,7 @@
 <script>
 import * as d3 from 'd3'
 import Cloud from 'd3-cloud'
-import { addClass, filterSocialIcon, appendScript } from 'utils'
+import { addClass, filterSocialIcon, loadSvgToBase64 } from 'utils'
 export default {
   name: 'sir-overview',
   props: {
@@ -166,37 +166,25 @@ export default {
 
     // },
     async transferToImg () {
-      this.$emit('update:loaded', false)
-
-      console.log('transferToImg')
       const _this = this
-      if (!window.canvg) {
-        await appendScript(['http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/canvg.min.js', 'http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/rgbcolor.min.js'])
-      }
-
-      const _cloud = document.getElementById('overview-word-cloud')
 
       const cloud = document.getElementById('download-word-cloud')
+
+      const _cloud = document.getElementById('overview-word-cloud')
       const svg = _cloud.children[0]
-      let xml = new XMLSerializer().serializeToString(svg)
-      const canvas = document.createElement('canvas')
+      const xml = new XMLSerializer().serializeToString(svg)
 
-      window.canvg(canvas, xml, {
-        renderCallback: (d) => {
-          canvas.toBlob(function (blob) {
-            let img = document.createElement('img')
-            let url = canvas.toDataURL()
+      const url = await loadSvgToBase64(xml)
 
-            img.src = url
-            img.className = 'full-width'
+      const img = document.createElement('img')
 
-            if (cloud.firstChild) cloud.removeChild(cloud.firstChild)
-            cloud.appendChild(img)
+      img.src = url
+      img.className = 'full-width'
 
-            _this.$emit('update:loaded', true)
-          })
-        }
-      })
+      if (cloud.firstChild) cloud.removeChild(cloud.firstChild)
+      cloud.appendChild(img)
+
+      _this.$emit('update:loaded', true)
     },
     cloudColor (number) {
       number = parseInt(number)
@@ -214,7 +202,7 @@ export default {
     },
     async drawCloud (words = this.words) {
       const dom = document.getElementById('overview-word-cloud')
-      if (!dom) return
+      if (!dom) return this.$emit('update:loaded', true)
 
       this.$emit('update:loaded', false)
       const { width, height } = dom.getBoundingClientRect()

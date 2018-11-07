@@ -888,10 +888,12 @@ export default {
     }
   }
   .download-NFTs-item {
+    position: relative;
     padding: 2px;
     width: 25%;
     margin-top: 16px;
     box-sizing: border-box;
+    z-index: 1;
     .NFTs-asset-poster {
       margin-bottom: 3px;
       position: relative;

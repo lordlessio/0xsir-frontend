@@ -8,10 +8,9 @@ import {
   differenceInCalendarMonths,
   differenceInCalendarISOYears
 } from 'date-fns'
-
 export const proxyImg = (url) => {
   if (!url || url === 'null') return null
-  return `${process.env.BACKEND_SERVER}/api/pimg?url=${url}`
+  return `${process.env.BACKEND_SERVER}/api/pimg?url=${encodeURIComponent(url)}`
 }
 
 export const formatDecimal = (value, { len = 4, percentage = false } = {}) => {
@@ -182,12 +181,94 @@ export const getBase64Image = (img, width, height) => {
   return dataURL
 }
 
+export const filter721Url = (str, size = 140) => {
+  if (!str || typeof str !== 'string') return str
+  const array = str.split('_')
+  return `http://cdn.lordlessio.com/0xsir/source/${array[0]}/${array[1]}.png?x-oss-process=image/resize,w_${size}`
+}
+
+export const resizeImage = (url, size = 140) => {
+  if (!url || typeof url !== 'string' || url.match(/(.svg)/)) return url
+  if (url.match(/(x-oss-process=image\/resize)/)) return url
+
+  return `${url}?x-oss-process=image/resize,w_${size}`
+}
+
+export const generateId = function () {
+  return Math.floor(Math.random() * 10000)
+}
+
+export const appendScript = (srcs) => {
+  return new Promise(resolve => {
+    let count = 0
+    for (const src of srcs) {
+      const script = document.createElement('script')
+      script.type = 'text/javascript'
+      script.src = src
+      script.sync = true
+      document.body.appendChild(script)
+      script.onload = () => {
+        count++
+        if (count === srcs.length) resolve(src)
+      }
+    }
+  })
+}
+
+// isloadCanvg 代表是否已经 正在 load canvg
+let isloadCanvg = false
+const loadCanvg = async () => {
+  // 如果 isloadCanvg 为 true 并且 !window.canvg，表示正在 load canvg 文件
+  // 此时做一个循环监听 window.canvg
+  if (isloadCanvg && !window.canvg) {
+    let _now = null
+    return new Promise(resolve => {
+      const func = (timesteap) => {
+        if (!_now) _now = timesteap
+        if (timesteap - _now < 1000) return window.requestAnimationFrame(func)
+        _now = timesteap
+        if (window.canvg) return resolve()
+        return window.requestAnimationFrame(func)
+      }
+      window.requestAnimationFrame(func)
+    })
+  }
+
+  // 反之加载 canvg 文件
+  if (!isloadCanvg && !window.canvg) {
+    isloadCanvg = true
+    await appendScript(['http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/canvg.min.js', 'http://lordless.oss-cn-hongkong.aliyuncs.com/static/js/rgbcolor.min.js'])
+  }
+}
+
+export const loadSvgToBase64 = async (xml, { useCORS = true } = {}) => {
+  await loadCanvg()
+
+  const canvas = document.createElement('canvas')
+
+  return new Promise(resolve => {
+    window.canvg(canvas, xml, {
+      useCORS,
+      renderCallback: () => {
+        const url = canvas.toDataURL()
+        resolve(url)
+      }
+    })
+  })
+}
+
 /**
  * 图片转base64格式
  */
 export const img2Base64 = (url) => {
-  url = url.split('?')[0]
-  return new Promise((resolve, reject) => {
+  if (url.match(/;base64,/)) return Promise.resolve(url)
+
+  url = url.split('?')[0] + `?time=${new Date().getTime()}_${Math.round(Math.random() * 10000)}`
+
+  if (url.match(/(.svg)/)) {
+    return loadSvgToBase64(url)
+  }
+  return new Promise((resolve) => {
     let img = new Image()
     img.crossOrigin = ''
     img.src = url
@@ -229,39 +310,5 @@ export const xhrImg2Base64 = (imgUrl) => {
       }
     }
     xhr.send()
-  })
-}
-
-export const filter721Url = (str, size = 140) => {
-  if (!str || typeof str !== 'string') return str
-  const array = str.split('_')
-  return `http://cdn.lordlessio.com/0xsir/source/${array[0]}/${array[1]}.png?x-oss-process=image/resize,w_${size}`
-}
-
-export const resizeImage = (url, size = 140) => {
-  if (!url || typeof url !== 'string' || url.match(/(.svg)/)) return url
-  if (url.match(/(x-oss-process=image\/resize)/)) return url
-
-  return `${url}?x-oss-process=image/resize,w_${size}`
-}
-
-export const generateId = function () {
-  return Math.floor(Math.random() * 10000)
-}
-
-export const appendScript = (srcs) => {
-  return new Promise(resolve => {
-    let count = 0
-    for (const src of srcs) {
-      const script = document.createElement('script')
-      script.type = 'text/javascript'
-      script.src = src
-      script.sync = true
-      document.body.appendChild(script)
-      script.onload = () => {
-        count++
-        if (count === srcs.length) resolve(src)
-      }
-    }
   })
 }
