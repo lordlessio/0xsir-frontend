@@ -18,7 +18,7 @@
           :options="scrollOpts"
           @pulling-down="pullDown"
           @pulling-up="pullUp">
-          <ul class="sir-popup-ul" :class="{ 'show': show }">
+          <ul class="lens-popup-list-ul" :class="{ 'show': opened }">
             <slot/>
           </ul>
         </cube-scroll>
@@ -71,7 +71,7 @@ export default {
   },
   data: () => {
     return {
-      show: false,
+      opened: false,
       rendered: false
     }
   },
@@ -92,7 +92,8 @@ export default {
           document.body.appendChild(this.$el)
         }
       } else {
-        this.show = false
+        this.opened = false
+        // this.$emit('update:opened', false)
         this.$emit('close')
       }
     }
@@ -111,7 +112,8 @@ export default {
       })
     },
     afterEnter () {
-      this.show = true
+      this.opened = true
+      // this.$emit('update:opened', true)
       this.$emit('opened')
     },
     destroy () {
@@ -179,7 +181,7 @@ export default {
   }
 
   /deep/ {
-    .sir-popup-ul {
+    .lens-popup-list-ul {
       >li {
         opacity: 0;
         transform: translateY(5px);

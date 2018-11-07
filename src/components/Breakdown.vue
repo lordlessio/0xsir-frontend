@@ -34,7 +34,7 @@
           <span class="i-block TTFontMedium download-erc20-symbol">{{ erc20.symbol | sliceStr({ end: 4 }) }}{{ erc20.symbol.length > 4 ? '..' : '' }}</span>
         </li>
       </ul>
-      <ul v-if="!download" class="break-erc20-assets text-center">
+      <ul v-if="!download" class="break-erc20-assets text-center" @click.stop="searchIntrust">
         <!-- <li
           v-for="(erc20, index) of erc20Assets.list"
           :key="index"
@@ -51,7 +51,7 @@
           v-for="(erc20, index) of erc20Assets.list"
           :key="index"
           class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
-          <p class="v-flex d-flex align-center text-left erc20-assets-name">
+          <p :data-contract="erc20.contract" :data-name="erc20.symbol" class="v-flex d-flex align-center text-left erc20-assets-name">
             <span class="i-block erc20-assets-logo popup-erc20-assets-logo">
               <img v-lazy="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract.toLocaleLowerCase()}`)"/>
             </span>
@@ -143,7 +143,7 @@
           </div>
         </li>
       </ul>
-      <button v-if="NFTDatas.NFTsTotal > NFTAssets.length" class="breakdown-btn" @click.stop="NFTsPopup = true">View more NFTs</button>
+      <button v-if="NFTDatas.NFTsTotal && NFTDatas.total > 4" class="breakdown-btn" @click.stop="NFTsPopup = true">View more NFTs</button>
     </div>
     <sir-popup
       :visible.sync="erc20Pupup"
@@ -155,8 +155,9 @@
         v-for="(erc20, index) of erc20Datas.list"
         :key="index"
         :style="`transition-delay: ${index * 0.05}s;`"
-        class="TTFontMedium d-flex justify-start popup-erc20-assets-item">
-        <p class="v-flex d-flex align-center text-left erc20-assets-name">
+        class="TTFontMedium d-flex justify-start popup-erc20-assets-item"
+        @click.stop="searchIntrust">
+        <p :data-contract="erc20.contract" :data-name="erc20.symbol" class="v-flex d-flex align-center text-left erc20-assets-name">
           <span class="i-block erc20-assets-logo popup-erc20-assets-logo" :data-contract="erc20.contract">
             <img :src="resizeImage(`${ossOrigin}/0xsir/source/erc20/${erc20.contract.toLocaleLowerCase()}`)" @error.once="onImgError"/>
           </span>
@@ -168,7 +169,7 @@
             <span class="TTFontBold popup-erc20-value">≈ ${{ erc20.value || 0 }}</span>
           </span>
         </p>
-        <p class="TTFontMedium text-right erc20-assets-percent">{{ erc20.value / erc20Assets.totalValue | formatDecimal({ len: 2, percentage: true }) }}%</p>
+        <p class="TTFontMedium text-right erc20-assets-percent">{{ (erc20.value / erc20Assets.totalValue) | formatDecimal({ len: 2, percentage: true }) }}%</p>
       </li>
     </sir-popup>
     <sir-popup
@@ -219,10 +220,14 @@
 </template>
 
 <script>
-import { img2Base64, resizeImage } from '@/assets/utils'
+import { resizeImage } from '@/assets/utils'
+
+import ImgLoadMixins from '@/mixins/imageLoad'
+import SearchMixins from '@/mixins/search'
 // import Alien from '_static/alien.png'
 export default {
   name: 'Breakdown',
+  mixins: [ImgLoadMixins, SearchMixins],
   props: {
     loading: {
       type: Boolean,
@@ -286,9 +291,6 @@ export default {
       const erc203 = erc20Assets.list[2] || {}
       return [erc201.value * 100 / erc20total, erc202.value * 100 / erc20total, erc203.value * 100 / erc20total]
     },
-    ossOrigin () {
-      return process.env.OSS_ORIGIN
-    },
     erc20Assets () {
       const _erc20Datas = JSON.parse(JSON.stringify(this.erc20Datas))
       return Object.assign({}, _erc20Datas, {
@@ -348,20 +350,6 @@ export default {
   methods: {
     resizeImage () {
       return resizeImage(...arguments)
-    },
-
-    onImgLoad (e) {
-      const _target = e.target
-      img2Base64(_target.src).then(str => {
-        _target.src = str
-      })
-    },
-
-    async onImgError (e) {
-      const _target = e.target
-      img2Base64(`${this.ossOrigin}/0xsir/source/sir-error-icon.svg`).then(str => {
-        _target.src = str
-      })
     },
 
     // 监听 scroll end 事件
@@ -781,7 +769,9 @@ export default {
     white-space: nowrap;
   }
   .NFTs-assets-item {
+    position: relative;
     width: 25%;
+    z-index: 1;
     &:not(:last-of-type) {
       margin-right: 5px;
     }
@@ -790,6 +780,7 @@ export default {
     position: relative;
     width: 58px;
     height: 58px;
+    z-index: -1;
     @include bg-size();
     &.cryptokitties {
       background-size: 120%;

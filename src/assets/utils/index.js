@@ -14,17 +14,33 @@ export const proxyImg = (url) => {
   return `${process.env.BACKEND_SERVER}/api/pimg?url=${url}`
 }
 
-export const formatDecimal = (str, { len = 4, percentage = false } = {}) => {
-  if (!str) return 0
-  if (len === 0) return Math.round(str)
+export const formatDecimal = (value, { len = 4, percentage = false } = {}) => {
+  if (!value) return 0
+  if (len === 0) return Math.round(value)
+
+  value = parseFloat(value)
   if (percentage) {
-    str = parseFloat(str) * 100
+    switch (true) {
+      case value * 100 < 0.1:
+        value = '< 0.1'
+        break
+      default:
+        value = value * 100
+    }
   }
-  str = str.toString()
-  if (str.split('.')[1]) {
-    str = str.split('.')[0] + '.' + str.split('.')[1].slice(0, len)
+
+  if (typeof value === 'string') {
+    return value
   }
-  return parseFloat(str)
+
+  if (value < 0.01) return value
+
+  // 将 value 转为 String 类型，用于分解
+  value = value.toString()
+  if (value.split('.')[1]) {
+    value = value.split('.')[0] + '.' + value.split('.')[1].slice(0, len)
+  }
+  return parseFloat(value)
 }
 
 /**
@@ -78,6 +94,8 @@ export const formatNumber = (number) => {
   if (!number) return 0
 
   number = parseFloat(number)
+
+  if (number / 1000000000 > 1000000000) return ' Infinity'
 
   const symbols = [
     { symbol: 'b', num: 1000000000 },
