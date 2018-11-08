@@ -60,7 +60,7 @@
         </li>
       </ul>
     </div>
-    <div class="d-flex flex-col">
+    <div class="d-flex flex-col" v-if="overviewDatas.txTimeline">
       <ul class="overview-tx-ul overview-tx-timeline" :class="{ 'order-2': download }">
         <li v-if="download" class="d-flex flex-row align-center">
           <p>Holding value</p>
@@ -115,12 +115,7 @@ export default {
     },
     overviewDatas: {
       type: Object,
-      default: () => {
-        return {
-          info: {},
-          txTimeline: {}
-        }
-      }
+      default: () => {}
     },
     erc20Datas: {
       type: Object,

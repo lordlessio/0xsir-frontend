@@ -300,52 +300,31 @@ export default {
     NFTAssets () {
       const _NFTs = JSON.parse(JSON.stringify(this.NFTDatas.NFTs))
       console.log('_NFTs', _NFTs)
-      const _NFTAssets = Object.values(_NFTs || {})
-      return _NFTAssets.slice(0, this.NFTsPs)
+      return Object.values(_NFTs || {}).slice(0, this.NFTsPs)
     },
     downloadNFTs () {
       const _NFTs = JSON.parse(JSON.stringify(this.NFTDatas.NFTs))
       console.log('_NFTs', _NFTs)
-      const _NFTAssets = Object.values(_NFTs || {})
+      const list = Object.values(_NFTs || {})
 
-      const __NFTAssets = JSON.parse(JSON.stringify(_NFTAssets))
+      const _list = JSON.parse(JSON.stringify(list))
       const _downloadNFTs = []
-      while (_downloadNFTs.length < 4 && __NFTAssets.length) {
-        for (let i = 0; i < __NFTAssets.length; i++) {
-          if (!__NFTAssets[i].list.length) {
-            __NFTAssets.splice(i, 1)
+
+      // 根据不同种类的 NFTs 挨个提取
+      while (_downloadNFTs.length < 4 && _list.length) {
+        for (let i = 0; i < _list.length; i++) {
+          if (!_list[i].list.length) {
+            _list.splice(i, 1)
             continue
           }
-          _downloadNFTs.push(__NFTAssets[i].list[0])
-          __NFTAssets[i].list.splice(0, 1)
+          _downloadNFTs.push(_list[i].list[0])
+          _list[i].list.splice(0, 1)
         }
-        // for (let i = 0; i < __NFTAssets.length; i++) {
-        //   if (i > 2) {
-        //     break
-        //   }
-        //   if (!__NFTAssets[i].list.length) {
-        //     __NFTAssets.splice(i, 1)
-        //     continue
-        //   }
-        //   for (let j = 0; j < __NFTAssets[i].list.length; j++) {
-        //     if (j > 3) {
-        //       break
-        //     }
-        //     _downloadNFTs.push(__NFTAssets[i].list[j])
-        //     __NFTAssets[i].list.splice(j, 1)
-        //   }
-        // }
       }
       console.log('_downloadNFTs', _downloadNFTs)
       return _downloadNFTs.sort(item => item.assets.contract)
     }
 
-  },
-  watch: {
-    NFTDatas (val) {
-      console.log('-NFTDatas', val)
-      if (val) this.initNFTDatas(val)
-    }
   },
   methods: {
     resizeImage () {
@@ -377,66 +356,26 @@ export default {
       }
 
       _scroll.scrollTo(scrollX, 0, 500)
-    },
-
-    // 初始化处理 NFTDatas
-    initNFTDatas (NFTDatas = this.NFTDatas) {
-      const _NFTs = JSON.parse(JSON.stringify(NFTDatas.NFTs))
-      console.log('_NFTs', _NFTs)
-      const _NFTAssets = Object.values(_NFTs || {})
-      // const _NFTAssets = values.map(item => {
-      //   const { list } = item
-      //   const _item = Object.assign({}, item, {
-      //     list: list.slice(0, 3),
-      //     pn: 0,
-      //     ps: 3
-      //   })
-      //   return _item
-      // })
-      this.NFTAssets = _NFTAssets.slice(0, this.NFTsPs)
-
-      const __NFTAssets = JSON.parse(JSON.stringify(_NFTAssets.slice(0, 3)))
-      const _downloadNFTs = []
-      while (_downloadNFTs.length < 11 && __NFTAssets.length) {
-        for (let i = 0; i < __NFTAssets.length; i++) {
-          if (i > 2) {
-            break
-          }
-          if (!__NFTAssets[i].list.length) {
-            __NFTAssets.splice(i, 1)
-            continue
-          }
-          for (let j = 0; j < __NFTAssets[i].list.length; j++) {
-            if (j > 3) {
-              break
-            }
-            _downloadNFTs.push(__NFTAssets[i].list[j])
-            __NFTAssets[i].list.splice(j, 1)
-          }
-        }
-      }
-      this.downloadNFTs = _downloadNFTs.sort(item => item.assets.contract)
-      console.log('_downloadNFTs', _downloadNFTs)
-    },
+    }
 
     // view more NFTs
-    viewMoreNFTs (e, NFTAssets = this.NFTAssets, NFTDatas = this.NFTDatas) {
-      const len = NFTAssets.length
-      const _NFTs = JSON.parse(JSON.stringify(NFTDatas.NFTs))
-      const values = Object.values(_NFTs || {})
+    // viewMoreNFTs (e, NFTAssets = this.NFTAssets, NFTDatas = this.NFTDatas) {
+    //   const len = NFTAssets.length
+    //   const _NFTs = JSON.parse(JSON.stringify(NFTDatas.NFTs))
+    //   const values = Object.values(_NFTs || {})
 
-      const _values = values.slice(len, this.NFTsPs + len).map(item => {
-        const { list } = item
-        const _item = Object.assign({}, item, {
-          list: list.slice(0, this.assetPs),
-          pn: 0,
-          ps: this.assetPs
-        })
-        return _item
-      })
-      const _NFTAssets = [].concat(NFTAssets, _values)
-      this.$set(this, 'NFTAssets', _NFTAssets)
-    },
+    //   const _values = values.slice(len, this.NFTsPs + len).map(item => {
+    //     const { list } = item
+    //     const _item = Object.assign({}, item, {
+    //       list: list.slice(0, this.assetPs),
+    //       pn: 0,
+    //       ps: this.assetPs
+    //     })
+    //     return _item
+    //   })
+    //   const _NFTAssets = [].concat(NFTAssets, _values)
+    //   this.$set(this, 'NFTAssets', _NFTAssets)
+    // },
 
     // 显示更多该类型 NFTs
     // getMoreAsset (asset, NFTAssets = this.NFTAssets, NFTDatas = this.NFTDatas) {
@@ -461,12 +400,12 @@ export default {
     //   })
     // },
 
-    initErc20 (erc20Datas = this.erc20Datas) {
-      const _erc20Datas = JSON.parse(JSON.stringify(erc20Datas))
-      this.erc20Assets = Object.assign({}, _erc20Datas, {
-        list: _erc20Datas.list.slice(0, this.erc20Ps)
-      })
-    }
+    // initErc20 (erc20Datas = this.erc20Datas) {
+    //   const _erc20Datas = JSON.parse(JSON.stringify(erc20Datas))
+    //   this.erc20Assets = Object.assign({}, _erc20Datas, {
+    //     list: _erc20Datas.list.slice(0, this.erc20Ps)
+    //   })
+    // }
   },
   mounted () {
     // xhrImg2Base64('http://cdn.lordlessio.com/0xsir/source/erc20/0xdd974d5c2e2928dea5f71b9825b8b646686bd200.png').then(d => {

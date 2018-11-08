@@ -162,8 +162,8 @@ export default {
     downloadLoaded (val) {
       if (val) this.drawImage()
     },
-    address (val) {
-      if (val) this.init({ address: val })
+    address (val, oval) {
+      if (val && oval) this.initOrigin({ address: val })
     }
   },
   components: {
@@ -200,7 +200,11 @@ export default {
         img.src = canvas.toDataURL('image/png', 1)
 
         this.$nextTick(() => {
-          document.getElementById('popup-download-img').appendChild(img)
+          const donwloadBox = document.getElementById('popup-download-img')
+          if (donwloadBox) {
+            donwloadBox.firstChild && donwloadBox.removeChild(donwloadBox.firstChild)
+            donwloadBox.appendChild(img)
+          }
           this.drawloaded = true
           this.qrcodeLoaded = false
         })
@@ -214,7 +218,7 @@ export default {
       this.drawloaded = false
     },
 
-    async init ({ address = this.address } = {}) {
+    async initOrigin ({ address = this.address } = {}) {
       if (!this.checkInput(address)) return
 
       this.getNFTs({ address })
@@ -226,10 +230,7 @@ export default {
 
     async getInfoById ({ address = this.address } = {}) {
       this.overviewLoading = true
-      let data = {
-        info: {},
-        txTimeline: {}
-      }
+      let data = {}
       try {
         const res = await getInfoById(address) || {}
         if (res.code === 1000 && res.data) {
@@ -344,7 +345,7 @@ export default {
     const address = this.$route.params.address
     this.$nextTick(() => {
       this.address = address
-      this.init(address)
+      this.initOrigin(address)
     })
     // this.$createHelloWorld({
     //   msg: 'Welcome to 0xsir',
@@ -387,6 +388,7 @@ export default {
       width: 375px;
       padding-top: 30px;
       box-sizing: border-box;
+      // overflow: hidden;
     }
   }
   .sir-downlowe-powered {

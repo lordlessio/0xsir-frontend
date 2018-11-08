@@ -237,7 +237,8 @@ export default {
     padding-left: 15px;
     padding-right: 30px;
     width: 100%;
-    height: 100%;
+    height: inherit;
+    line-height: inherit;
     font-size: 16px;
     color: #BDB9FD;
     background-color: transparent;
