@@ -116,7 +116,7 @@
             <span v-if="tx.nickName">{{ tx.nickName }}</span>
             <span v-else>{{ (tx.send ? tx.to : tx.from) | splitAddress({ before: 5, end: 3 }) }}</span>
           </p>
-          <p class="symbol">#{{ tx.tokenSymbol }}{{ index }}</p>
+          <p class="symbol">#{{ tx.tokenSymbol }}</p>
           <p class="text-nowrap date">{{ new Date(parseInt(tx.timestamp) * 1000) | dateFormat('MMM. DD YYYY hh:mm:ss') }}</p>
         </div>
         <p class="recent-deal-num" :class="{ 'send': tx.send }">{{ tx.send ? '-' : '+' }}{{ tx.value | weiToEth(tx.decimals) | formatNumber }}</p>
