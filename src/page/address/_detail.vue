@@ -1,15 +1,15 @@
 <template>
   <main id="sir-main" class="sir-main" :class="{ 'download': download }">
-    <!-- <sir-loading :visible="!loadingDone"/> -->
+    <!-- <sir-loading :visible="!mainLoading"/> -->
     <sir-header
-      :loading="!loadingDone"
+      :loading="mainLoading"
       :hide="download"
       @search="search"
       @download="preDownload = !preDownload"/>
     <transition name="sir-detail-fade" mode="out-in" @enter="toTop">
       <serach-loading
         key="lens-search-loading"
-        v-if="!loadingDone || (!this.txDatas.list.length && !erc20Datas.eth.txns)"
+        v-if="mainLoading || (mainLoading && !txDatas.list.length && !erc20Datas.eth.txns)"
         :address="address"
         :error="loadingError"/>
       <div v-else key="lens-content">
@@ -26,11 +26,9 @@
         <closest
           v-if="!download"
           :closests="closests"
-          :loading="closestLoading"
           @search="search"/>
 
         <breakdown
-          :loading="nLoading || eLoading"
           :NFTDatas="NFTDatas"
           :erc20Datas="erc20Datas"
           :download="download"
@@ -38,10 +36,7 @@
 
         <block-transactions
           v-if="!download"
-          :loading="tLoading"
           :txs="txDatas.list"
-          @refresh="refreshTxDatas"
-          @loadmore="loadmoreTxDatas"
           @search="search"/>
 
         <share-q-r v-if="download" :loaded.sync="qrcodeLoaded"/>
@@ -75,6 +70,8 @@ import { getInfoById, getNFTs, getErc20, getTxs, getClosests } from 'api'
 
 import Html2Canvas from 'html2canvas'
 
+import { mapState, mapMutations } from 'vuex'
+
 // window.Html2Canvas = Html2Canvas
 // import Canvas2Img from 'utils/canvas2Img'
 // import SaveAs from 'file-saver'
@@ -90,56 +87,48 @@ export default {
       // downloadLoaded: false,
       preDownload: false,
 
-      overviewLoading: true,
+      // overviewLoading: true,
       overviewDatas: {
         info: {},
         txTimeline: {}
       },
 
-      NFTsLoading: true,
+      // NFTsLoading: true,
       NFTDatas: {
         NFTs: []
       },
 
-      erc20Loading: true,
+      // erc20Loading: true,
       erc20Datas: {
         eth: {},
         list: []
       },
 
-      txLoading: true,
+      // txLoading: true,
       txDatas: {
         list: []
       },
 
-      closestLoading: true,
+      // closestLoading: true,
       closestsData: {
         list: [],
         words: []
       },
-
       qrcodeLoaded: false,
-      cloudLoaded: false
+      cloudLoaded: false,
+      mainLoading: true
     }
   },
   computed: {
-    eLoading () {
-      return this.overviewLoading || this.erc20Loading
-    },
-    nLoading () {
-      return this.e2Loading || this.NFTsLoading
-    },
-    tLoading () {
-      return this.nLoading || this.txLoading
-    },
-    loadingDone () {
-      return !(this.eLoading || this.nLoading || this.tLoading || this.closestLoading)
-    },
+    ...mapState([
+      'lensAssets'
+    ]),
+
     loadingError () {
-      return this.loadingDone && !this.txDatas.list.length && !this.erc20Datas.eth.txns
+      return !this.mainLoading && !this.txDatas.list.length && !this.erc20Datas.eth.txns
     },
     download () {
-      return this.loadingDone && this.preDownload
+      return !this.mainLoading && this.preDownload
     },
     downloadLoaded () {
       return this.download && this.qrcodeLoaded && this.cloudLoaded
@@ -156,14 +145,18 @@ export default {
     '$route' ({ params }) {
       this.address = params.address
     },
-    loadingDone (val) {
-      if (val) document.getElementById('app').scrollTop = 0
+    mainLoading (val) {
+      if (!val) {
+        document.getElementById('app').scrollTop = 0
+      }
     },
     downloadLoaded (val) {
       if (val) this.drawImage()
     },
-    address (val, oval) {
-      if (val && oval) this.initOrigin({ address: val })
+    address (val) {
+      if (val) {
+        this.initOrigin({ address: val })
+      }
     }
   },
   components: {
@@ -178,6 +171,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations([
+      'setLensAssets'
+    ]),
+
     toTop () {
       document.getElementById('app').scrollTop = 0
     },
@@ -218,18 +215,53 @@ export default {
       this.drawloaded = false
     },
 
+    setOriginDatas ({ NFTDatas, erc20Datas, txDatas, overviewDatas, closestsData } = {}) {
+      this.NFTDatas = NFTDatas
+      this.erc20Datas = erc20Datas
+      this.txDatas = txDatas
+      this.overviewDatas = overviewDatas
+      this.closestsData = closestsData
+    },
+
     async initOrigin ({ address = this.address } = {}) {
       if (!this.checkInput(address)) return
 
-      this.getNFTs({ address })
-      this.getErc20({ address })
-      this.initTxDatas({ address })
-      this.getInfoById({ address })
-      this.getClosests({ address })
+      this.mainLoading = true
+
+      if (this.lensAssets[address]) {
+        this.setOriginDatas(this.lensAssets[address])
+      } else {
+        const [ NFTDatas, erc20Datas, txDatas, overviewDatas, closestsData ] = await Promise.all([
+          this.getNFTs({ address }),
+          this.getErc20({ address }),
+          this.initTxDatas({ address }),
+          this.getInfoById({ address }),
+          this.getClosests({ address })
+        ])
+
+        const asset = {
+          address,
+          data: {
+            overviewDatas,
+            NFTDatas,
+            erc20Datas,
+            txDatas,
+            closestsData
+          }
+        }
+
+        this.setOriginDatas(asset.data)
+
+        this.setLensAssets(asset)
+      }
+
+      this.$nextTick(() => {
+        this.mainLoading = false
+      })
     },
 
     async getInfoById ({ address = this.address } = {}) {
-      this.overviewLoading = true
+      // this.overviewLoading = true
       let data = {}
       try {
         const res = await getInfoById(address) || {}
@@ -242,12 +274,13 @@ export default {
       } catch (err) {
         console.warn('overview error', err)
       }
-      this.overviewDatas = data
-      this.overviewLoading = false
+      // this.overviewDatas = data
+      // this.overviewLoading = false
+      return data
     },
 
     async getNFTs ({ address = this.address } = {}) {
-      this.NFTsLoading = true
+      // this.NFTsLoading = true
       let data = {
         NFTs: []
       }
@@ -259,11 +292,12 @@ export default {
       } catch (err) {
         console.warn('nfts error', err)
       }
-      this.NFTDatas = data
-      this.NFTsLoading = false
+      // this.NFTDatas = data
+      // this.NFTsLoading = false
+      return data
     },
     async getErc20 ({ address = this.address } = {}) {
-      this.erc20Loading = true
+      // this.erc20Loading = true
       let data = {
         eth: {},
         list: []
@@ -276,12 +310,13 @@ export default {
       } catch (err) {
         console.warn('erc20 error', err)
       }
-      this.erc20Datas = data
-      this.erc20Loading = false
+      // this.erc20Datas = data
+      // this.erc20Loading = false
+      return data
     },
 
     async getClosests ({ address = this.address }) {
-      this.closestLoading = true
+      // this.closestLoading = true
 
       let data = {
         list: [],
@@ -296,15 +331,17 @@ export default {
       } catch (err) {
         console.warn('closests error', err)
       }
-      this.closestsData = data
-      this.closestLoading = false
+      // this.closestsData = data
+      // this.closestLoading = false
+      return data
     },
 
     async initTxDatas ({ address = this.address } = {}) {
-      this.txLoading = true
+      // this.txLoading = true
       const txDatas = await this.getTxDatas({ address })
-      this.txDatas = txDatas
-      this.txLoading = false
+      // this.txDatas = txDatas
+      // this.txLoading = false
+      return txDatas
     },
 
     async getTxDatas ({ address = this.address } = {}) {
@@ -319,33 +356,33 @@ export default {
       }
 
       return data
-    },
-
-    async refreshTxDatas (cb) {
-      const txDatas = await this.getTxDatas({ pn: 0 })
-      this.txDatas = txDatas
-      cb()
-    },
-    async loadmoreTxDatas (cb, pn = this.txDatas.pn, ps = this.txDatas.ps) {
-      pn = parseInt(pn) + 1
-
-      const moreDatas = await this.getTxDatas({ pn, ps })
-      if (!moreDatas || !moreDatas.list.length) return cb()
-      const _list = this.txDatas.list
-      this.$set(this, 'txDatas', {
-        pn,
-        ps,
-        list: [].concat(_list, moreDatas.list)
-      })
-      cb()
     }
+
+    // async refreshTxDatas (cb) {
+    //   const txDatas = await this.getTxDatas({ pn: 0 })
+    //   // this.txDatas = txDatas
+    //   cb()
+    // },
+    // async loadmoreTxDatas (cb, pn = this.txDatas.pn, ps = this.txDatas.ps) {
+    //   pn = parseInt(pn) + 1
+
+    //   const moreDatas = await this.getTxDatas({ pn, ps })
+    //   if (!moreDatas || !moreDatas.list.length) return cb()
+    //   const _list = this.txDatas.list
+    //   this.$set(this, 'txDatas', {
+    //     pn,
+    //     ps,
+    //     list: [].concat(_list, moreDatas.list)
+    //   })
+    //   cb()
+    // }
   },
 
   async mounted () {
     const address = this.$route.params.address
     this.$nextTick(() => {
       this.address = address
-      this.initOrigin(address)
+      // this.initOrigin(address)
     })
     // this.$createHelloWorld({
     //   msg: 'Welcome to 0xsir',

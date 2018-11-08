@@ -64,7 +64,7 @@
       <ul class="overview-tx-ul overview-tx-timeline" :class="{ 'order-2': download }">
         <li v-if="download" class="d-flex flex-row align-center">
           <p>Holding value</p>
-          <p class="v-flex text-right overview-text">$ {{ erc20Datas.totalValue | formatDecimal }}</p>
+          <p class="v-flex text-right overview-text">$ {{ erc20Datas.totalValue | formatDecimal({ money: true }) }}</p>
         </li>
         <li class="d-flex flex-row align-center">
           <p>Birthday</p>

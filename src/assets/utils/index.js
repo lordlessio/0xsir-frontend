@@ -13,7 +13,7 @@ export const proxyImg = (url) => {
   return `${process.env.BACKEND_SERVER}/api/pimg?url=${encodeURIComponent(url)}`
 }
 
-export const formatDecimal = (value, { len = 4, percentage = false } = {}) => {
+export const formatDecimal = (value, { len = 4, percentage = false, money = false } = {}) => {
   if (!value) return 0
   if (len === 0) return Math.round(value)
 
@@ -36,10 +36,12 @@ export const formatDecimal = (value, { len = 4, percentage = false } = {}) => {
 
   // 将 value 转为 String 类型，用于分解
   value = value.toString()
+
   if (value.split('.')[1]) {
     value = value.split('.')[0] + '.' + value.split('.')[1].slice(0, len)
   }
-  return parseFloat(value)
+
+  return money ? parseFloat(value).toLocaleString() : parseFloat(value)
 }
 
 /**

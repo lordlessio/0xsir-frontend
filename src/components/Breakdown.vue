@@ -16,7 +16,7 @@
         <span>More</span>
       </p>
     </div>
-    <p class="download-hide TTFontMedium break-holding"><span>$ {{ erc20Assets.totalValue | formatDecimal }}</span>&nbsp;&nbsp;&nbsp;holding</p>
+    <p class="download-hide TTFontMedium break-holding"><span>$ {{ erc20Assets.totalValue | formatDecimal({ money: true }) }}</span>&nbsp;&nbsp;&nbsp;holding</p>
     <div class="download-hide break-progress-bar">
       <p class="d-flex align-center progress-bar-bg">
         <span
