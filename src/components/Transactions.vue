@@ -109,7 +109,7 @@
         v-for="(tx, index) of txs" :key="index"
         @click.stop="searchIntrust">
         <span class="i-block recent-symbol-poster">
-          <img :data-contract="tx.contract" :data-name="tx.tokenSymbol" :src="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`" @error.once="onImgError"/>
+          <img :data-contract="tx.contract" :data-name="tx.tokenSymbol" v-lazy="`${ossOrigin}/0xsir/source/erc20/${tx.contract.toLocaleLowerCase()}`"/>
         </span>
         <div class="v-flex TTFontMedium recent-item-cnt">
           <p :data-contract="tx.send ? tx.to : tx.from" :data-name="tx.nickName" class="TTFontBold name">

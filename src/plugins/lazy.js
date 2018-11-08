@@ -6,5 +6,5 @@ Vue.use(VueLazyload, {
   error: 'http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/sir-error-icon.svg',
   loading: 'http://lordless.oss-cn-hongkong.aliyuncs.com/0xsir/source/sir-error-icon.svg',
   attempt: 1,
-  listenEvents: [ 'scroll' ]
+  listenEvents: [ 'scroll', 'wheel', 'mousewheel', 'touchmove' ]
 })
