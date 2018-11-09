@@ -221,9 +221,17 @@ export default {
       this.txDatas = txDatas
       this.overviewDatas = overviewDatas
       this.closestsData = closestsData
+
+      // 接口信息请求成功之后，修改 title 为 name || address
+      if (overviewDatas.info) {
+        document.title = `Blocklens - ${overviewDatas.info.name || this.address}`
+      }
     },
 
     async initOrigin ({ address = this.address } = {}) {
+      // 初始进入时，修改 title 为 address
+      document.title = `Blocklens - ${address}`
+
       if (!this.checkInput(address)) return
 
       this.mainLoading = true

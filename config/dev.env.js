@@ -4,5 +4,5 @@ const prodEnv = require('./prod.env')
 
 module.exports = merge(prodEnv, {
   NODE_ENV: '"development"',
-  BACKEND_SERVER: `"//10.229.7.157:8181/lordless"`,
+  BACKEND_SERVER: `"//localhost:8181/lordless"`,
 })
